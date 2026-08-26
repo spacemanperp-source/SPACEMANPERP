@@ -1,0 +1,47 @@
+name: Refresh ADA price anchor
+
+on:
+  schedule:
+    # GitHub's own docs list 5 minutes as the shortest interval scheduled
+    # workflows reliably support — anything faster (e.g. every minute) tends
+    # to get silently delayed or skipped under load. This is the fallback
+    # layer for visitors whose browser can't reach CoinGecko directly; the
+    # page itself also polls CoinGecko every ~60s on its own when it can.
+    - cron: '*/5 * * * *'
+  workflow_dispatch: {}    # lets you trigger it manually from the Actions tab
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch ADA/USD price and write anchor.json
+        run: |
+          set -e
+          RESPONSE=$(curl -sf "https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd")
+          PRICE=$(echo "$RESPONSE" | python3 -c "import sys, json; print(json.load(sys.stdin)['cardano']['usd'])")
+          FETCHED_AT=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          cat > anchor.json <<JSON
+          {
+            "price": $PRICE,
+            "source": "CoinGecko (public spot price)",
+            "fetchedAt": "$FETCHED_AT"
+          }
+          JSON
+          cat anchor.json
+
+      - name: Commit and push if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add anchor.json
+          if git diff --cached --quiet; then
+            echo "No change in price — nothing to commit."
+            exit 0
+          fi
+          git commit -m "Refresh ADA/USD price anchor"
+          git push
