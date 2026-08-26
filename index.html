@@ -1,0 +1,1321 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>Spaceman Perps</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --bg: #f6f4fb;
+    --surface: #ffffff;
+    --surface-2: #edeaf7;
+    --border: #dcd6ec;
+    --text: #19162a;
+    --text-dim: #5f5a78;
+    --text-faint: #8985a0;
+    --accent: #5b45d6;
+    --accent-2: #3f7bf2;
+    --accent-soft: #ece7fb;
+    --long: #158f63;
+    --long-soft: #e2f6ee;
+    --short: #d8342b;
+    --short-soft: #fbe6e4;
+    --warn: #b9720e;
+    --warn-soft: #fbf0dd;
+    --shadow: 0 1px 2px rgba(20,25,40,0.04), 0 8px 24px -12px rgba(20,25,40,0.10);
+    --radius: 10px;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg: #0a0812;
+      --surface: #14111f;
+      --surface-2: #1c1830;
+      --border: #2c2645;
+      --text: #eae7f7;
+      --text-dim: #948eb0;
+      --text-faint: #625c7c;
+      --accent: #9382ff;
+      --accent-2: #5a8dff;
+      --accent-soft: #241f42;
+      --long: #2fd39a;
+      --long-soft: #10352b;
+      --short: #ff6a63;
+      --short-soft: #3a1918;
+      --warn: #f5b94a;
+      --warn-soft: #3a2c10;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px -14px rgba(0,0,0,0.55);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg: #0a0812;
+    --surface: #14111f;
+    --surface-2: #1c1830;
+    --border: #2c2645;
+    --text: #eae7f7;
+    --text-dim: #948eb0;
+    --text-faint: #625c7c;
+    --accent: #9382ff;
+    --accent-2: #5a8dff;
+    --accent-soft: #241f42;
+    --long: #2fd39a;
+    --long-soft: #10352b;
+    --short: #ff6a63;
+    --short-soft: #3a1918;
+    --warn: #f5b94a;
+    --warn-soft: #3a2c10;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px -14px rgba(0,0,0,0.55);
+  }
+
+  *{ box-sizing: border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: var(--bg);
+    color: var(--text);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  .num, .mono{ font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace; font-variant-numeric: tabular-nums; }
+  h1,h2,h3{ text-wrap: balance; margin: 0; }
+  button{ font-family: inherit; }
+  a{ color: var(--accent); }
+
+  .wrap{ max-width: 1100px; margin: 0 auto; padding: 1.25rem 1.25rem 3rem; }
+
+  /* ---------- header ---------- */
+  .topbar{
+    display:flex; align-items:center; justify-content: space-between; gap: 1rem;
+    flex-wrap: wrap;
+    padding: 0.25rem 0 1.1rem;
+  }
+  .brand{ display:flex; align-items:center; gap: 0.65rem; flex-wrap: wrap; }
+  .brand-mark{
+    width: 30px; height: 30px; border-radius: 8px;
+    flex: none;
+  }
+  .brand-name{ font-family:"Bricolage Grotesque", sans-serif; font-weight:600; font-size: 1.25rem; letter-spacing: -0.01em; }
+  .account-chip{
+    display:flex; align-items:center; gap: 0.6rem; background: var(--surface-2); border: 1px solid var(--border);
+    border-radius: 999px; padding: 0.35rem 0.5rem 0.35rem 0.75rem; font-size: 0.8rem; color: var(--text-dim);
+  }
+  .account-chip .num{ color: var(--text); font-weight:600; }
+  .switch-btn{
+    border: 1px solid var(--border); background: var(--surface); color: var(--text-dim);
+    font-size: 0.72rem; font-weight:600; padding: 0.25rem 0.55rem; border-radius: 999px; cursor:pointer;
+  }
+  .switch-btn:hover{ color: var(--text); border-color: var(--text-faint); }
+
+  /* ---------- profile gate ---------- */
+  .auth-gate{
+    position: fixed; inset: 0; background: color-mix(in srgb, var(--bg) 85%, transparent);
+    backdrop-filter: blur(3px); display:flex; align-items:center; justify-content:center; padding: 1.5rem; z-index: 50;
+  }
+  .auth-gate[hidden]{ display: none; }
+  .auth-gate-card{
+    width:100%; max-width: 360px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; box-shadow: var(--shadow); padding: 1.7rem 1.6rem; text-align:center;
+  }
+  .auth-gate-mark{
+    width:44px; height:44px; margin: 0 auto 1rem; border-radius: 12px;
+  }
+  .brand-mark, .auth-gate-mark{
+    background-image: url("data:image/webp;base64,UklGRtAVAABXRUJQVlA4IMQVAABwTQCdASqgAKAAPmEmj0WkIiEWuw6MQAYEoAzMim1L/g8sj0pLNfecvf7r7u/m16Rfuq9wD9JvOM9afmJ/br/VezV/qvWL/ovUA/n3+U6y30AP2q9Lz9qPg5/aH9qfaM/8d2j8N/Jf6s/b/225d3UHmP/KfwJ+x/u/pt/wPEX5Kf53qC/kf9C/zv5k8Nva70Efdr7J/t/Ez1ZfCv/F9wH9WP+TyLtAP+Z/3X/ofdv8lv/N/nfzQ9x/1B/6f878BH85/sv/B/vntl+0D9wfZ9/ZVzAghbHi3//qJH5Ww5dvJh4DcdRtZkVbL5S5lL4WZBvlTrEwY/HqxhwbSYa3yLvFJIwL4lvLDw638et2qC+uqXanNwuTWWkKygUM8aO8nyJj0Bqy/Cf8iqpSLYzuuNyDk/89oVILR4Rj5YGxrpGe+jrFJW2buwz06qKq7+1kgxhK93yZUKrcGT3fHdy8TtcjB4uoN7TNyy/PnOMP7jotpEvClozFkKT4P4+oc5e5wkmyLND1zFW51BVXH/Xfsro2GfAURhyNn3qjtleVyYwNtYwJHWx5EQZJet/M/nmmEq9uAfEvx0ozL9/hBvdp8ENJdjcn77e6n/BO2/NilcjOzfmHPXGbnfFfblGZHhg41HQApfrqVegatUK8ixo4EKCmNjsu1OmLa3r87J6KJb8oLEcXMqvv1sqGzd99VWGViZRbzMENiDQuzd06Dbwv2/jZ2vEBZfcjoPAhpnsDJwzvkcy7N4cVUK8iAkiNMP7Cxx2TP556j4o0lyxrYap1uBkMW9qWZ5L6C/rCSL5en+Pb0767q2zQyoh1JLX9aq38/OCxH7AAAP7+pTYMA6Ld5k0glUo9C+z61iS+f4dOyhKn2P88EthNqCTz2BgDgfXoQ1zjYKrHz5PsJ4FOMTA9DB6AHX32h+4OpbVhfARL/Jrmg+92hf2s13ug17xPqaQWWbnts+pCMN07sdfAB1s2hzp2U/wXhkqX1K1gUgywKwrk7yB9l0BB6Cq81gtkAW3vgsvqjQnc31nreKm9XlupVPCK7dKZQ6XL3TYJjYPglkFbHjhELLnkfDRwqqhFOOQNvKGy0gVMkfj9X8zV7CI165qlWVZIzZFf+DblguMoGRbi+PJynIdjfO/rELTLRayaqHS/ePaLkKTpB7AY2CbPLALb+vi1xm0apnojkmRWgcgH81udD4ng30WxDN/Aw/5Jbn0/f++PZYH7bp4uI4lNjmPtwSupAu/qt78gLObbeI8BhyRGDLx5PQswCbj4Kxc55XsYfcrgszDOqBArHl+JlPsW+pTGnJdWigREMxcjT4wbUOYNP+v81WFvcS1la2ECetVzeO1azneawylxxddVaqFVeIPV/dqrwSkhcxXHqPYmuJWULnBcdtlzHP3IWcw5ygV3Ij2FxYxzEDfCtDzKdVfcq6Kq2cGTPvYcapf3Jmmmo8qzcEOV3db2J8czRvb5A82TMawrkGd68GF1BcMDx9Og5wAbRRG6y0ytXgk3797t+vf6Y+A8yDFwrGdGTpYKZ71Q1u6uU1uAEVOUQ3l7xV04sY/XII8yDAR0LRVt6heP+oYfsMI+ZrsH6hrceLS+xySyaQa4/qpt/blF+CbWX767iqpbR8Q9zUvaiyHQf3gAHAoP1y3g6XVsd/RxOqyAOpBJR2y4bUuQVhkO5G9TjRnuRH7ePABw3KmWZD6IxTTuVwBU+PDEhjYQ6KpJ57PbgxdSsIe3R+HsbTtKeVmOb33jT0uVqhV1ncp0KGCbgUYionq2UilNpIRDvtyBNSe/zDj6oF2x2yeMUF/akJToG9r/NJDNeuLovpdlQi4Nm0af084MQHnv5KcU+TMyQRwJISjto7mWYt4+ChqiOMWQKIJYHdqzRSUR2YAusEwQfyHSfO9cRSWTQ4gRZB6sMi2SJau3XB4QqaIfgR+6FHlqNBDBVAH3HQVjoGrqFZWYLNB2OgH77jpyULT3sIbN9T4YVRTQiq6mQOfInFU+D/0VwS3tJ/gijUNjt/aZZ6Xi7dPgTgdQwrs7sMqMkfT2rV0Wl7PJ0cQvLOxPp5o2rlbuoEbCzFqGKe+yw8tAMKkQ67O9FgYFvMji19w3+YL9wrSSGwYiEdsxO4aK7wY+xBSjDDOYQlP12f9jGqMoQBY2DGn6rczhDAhoycSGor4/oVZvolb7gFLeP6rLBRODkqpZuprTHXIQDGXbtMZT3Q6GjSwX+P69v0dIylbQ0sgy5OUR4SuXbAH/Qq8ta1FHDmvCf8Y5PvYkGtnEcdKAJNeuHqcGoPeSxYPR5ldDpqd1rhJMfLnCm4oB5aGLKgfE8qA7v/7KTlPZR2FyURdMvR9+pk/HgGZbJMvwQd1KH45KZj3JXX05WdaRKiIxrg6MGdbCUhbYbnduAwZyH53s7zNg+WCoGXrZyWAl6M3I4wTOvP5/4yUxOB1dJXaTIdgQF1n5jfMzELp17MQ6zfQfuYkKEpNqtQoz7B8rJIXuPi8REr7JiFtvzYcTK4Y3YQqolJqZty+tWb3zCDPgR3dCgk/ipEORPQ6ns7tUS5lDdKIwUb/5s+N3QG0sKipx0NApfo5ZbRy5IeDhqV3ott2ZpxVG5+b47a6c9yOFpX2ZKbuC0OsVf9ng00A7JIqDvHh1VpWnmFzoF+IjsSxgdv+++1xExU6YuVg2fCaU5qyMg7i079vgZ4v11dVqgmQyi/+NhHt1RXbOfDmu+u2YaM1I2lWZ/KUPBBjXVaxgeLvj4DaR1jxi9EcMaH5OOQK3jN/tJ3H5dGcZ2Gvt3y79yG/B5aViwJfIw6Fg/zVG+tYT+Yk4S6TD0buayZnRfm4T8NR+SWL4Pa0Pa2/sL+7sbgSsWvlmsRS1IG0Rst+2w20fzdfsdn6y3v/+ZEnxgSL9NAmDLlEjv4+jsxBx/bRQQGoR/hohyogMqxwtJ/p5t+PsrhkSjJl2L/MylMLNRG2tdIGgT+HZWMXmtjK8ZvrAuayqTpD164UQOwnMDs+0W0c96zYClAaah0HDlRFHa1XY6E8mb8weS+UUFj6wNJwj+F2wNmTi6ulfmJ2XP+ukfb/k8UmlvhMPiLLiT497Nr1kOPTBJBOgtW8aFkJ6TV9Z9heiZoF9IP6YEw5kcg2f7c9AUDyoc5CnV98IsTnt6H+RKyUMN7g8C+CqNAiGAr+4CpnSNYEj9gAT4OpcPHAKfLU8rkkeglS5pPiZtpDt6nRgZulMtvjnAMVR4jLSG/WYzGdGy81C527cElAEu2/aMBSVMY0fYaOC1EwfH4syAd6Kh+dDbrrW+96X5CTFD84IthVwUPN/mM/En3KWu4+5NVZqM/5279nAzzkJmtm9QtHwf7D0gTcKcPii9dYR7cwgv3fMssALOAE+c3cR3fik0DGPwt0oDJm9VffmTRx0oD7mS5x5us8uUEdLQ9J+EOy9Ft8DI7Haz2gmyf9pv00r0tKK2w7OTJrjzItGZv9HuMHcdlBg631OuIOh2kaiboz6k/p43/Egkxy53/hocr7ln3w/A5wg9Snt222macKX1xxRBauZsprYUbjiTRZmSLkLWaNwpzKYfpUZqGbhmQuUST+se8m/SI1E3p1loILFATv47PuaJ/LNG06LgxPU0NnO3G/w7/o/x/aChfQ6MX5l/gNax7SLCiTaPYc43JjiPo4CxGjZt5cDUfw+idc1AUQ99OvO47D6aVdIzW0PqQTyDTzdGRKREHgZ6IHWBi3mR/XG6x2DO0Op8JBn2Pji0DH/H/Don3tF3u8UN7fr4m73zW3fuHAa16d8wgLYIfXFZpKu/PwsYjgYXkTqlKukMcFd4Ekk5UEka+uuDifx0mG+P15kAOOmRuyokfqsStBqDx8Lurvtcech0WfzFP/gifDMNmYbWvDe4gllIj4RCCsz5BmEWNtbT9XL8PmCPyUAZHajB2V6+OrUizFS4FUpDWm85CYInu67e65ez9stHQIBGhYUY1oF1h0m6tUAkHaO5q1fbp95G5Gvqi28fFjxemtPZ6ViH3nv3vQeoN0h/7ZcRMTPrCrSwyEKKNBsT9AB+RCNH+BcCfSTVenP4Y4NuU9S/n53D5V2jQLFR7FGMQia+rk/Bc4IjTYddjrvJ9fTws843tLQDjpexAADDL6rf+b4HsiaIEvgOw+Lq9GOQlvdX3JMY1RYNBKeXPTbrjIWTQLYfBUJw/FgbKHM9Zouqyo9c159qx8nQMYfuK6JazYtw6aZOvzPqyOdOEqu/bzy/hLlFER9Mbda+uK+dwPI0qb0ZsaqhEH8HZp4cfVR2iKeYaKtqrlAWq2ql58LfXDzV0dQm0H+IoM/3adMNr2aNOLtXZL5B7zpgp7dN/3RBmqwrtQRBS4N0oNSl46cH1+B4xB4wFY8wzw/pu5YcJP0jVTUmLl4cS+Inja13ZutKKbFDURECqR3zwIpQHuVxbRYXmhGzxsxvbQZVBH0ksXjRNQQxdjxtI2Cy1lpR6fIqGUEsW1L5rjDsRdBOkhUyZLw52o+BoTe7L1RujXilLudkU03SfjNL0gDyK+oJvscUgze6FhEUCfDtXfdQSps0gisb481GN6tYiBH2jLdxlChroPR0Lfr8dHYlfCka04wv0Mzjb+BQ1c4CWk3o8oV6+uieXZq/mtlEij35NdPBSe9KiqcqU/8VLdZz/C2Yeguvtsg41DO18w5b6llgBv0SxOjYaWjat/XDE/rJRaa/r1fUCEit8ybfVqV1fldbzOZRA7xw47GlQRpOmA4T8uHxxweyIwpyypzT2+JhkLDPg486mSLXOrPf6ywDKqPr5ZgfIhvm2/1/wgODqWfiZjOdYGWtxEaSahGQVGpsrUHo3Xdri3nkh56Fy3vnbd7LLHkCGyPIkhnGM+EiNtrXPLmEYMmYZnTnJWFqrA0XUb1OEhrQn/siBvNeUXHeB1eZ+jEarq+93L9U6pMmpTlPayB3+fGf8R65Tl1EV4wuLeuH5LL1ALXrGr5fk0ETSX0GxfbIc2NJaS5ReBsqs7hd3lrlyMDs/ObUONuqRRxrm1ayIcpTkDovNN/O9Rj5hmrYxRz1+6rYSSHKWHnnz3UmjqSp225ElSrlUHK0mGH9k13EN4N9RWq9G4pLaXyl9Qe1EfNfu4NE/4LYjvBe/cIl36eOsvW2R2Qhtrbt+QAbvNd/n5SZulcTdJEEaIJDESLtBh8pLHIK7mBitOtcitE/wn8WJKOnYp79k5NTPEqdboduoSnzoVJzfgyA+2Likfn+iQB8q2uceZ9hrXXXtUP2NF+p5UAX8o5028NdunDZYEEH9JR9gscOo9LZmtlLCt1jV+KYXSm3DfLNOax1JX0H1MedCiTMxqueIBKCnNyv3WwRKY1aByk1Rc4vEAKv6nb28WRh0uw1FePjtokctpf6TWKjnMGtzhQaj/GuiCWDlKpn4Dj8vDo9rPEUzMbGyet8npSHfbNMN94EXudMTq9h9iGDbtilxvk3F5k/nb6KphjEPkU+ugpzUsxFr3MXlyePtarqPQXI27Ic21HqZQ/FVsAXGliARC5iLyO8/3cOxM6JTBquWGimIWS3X69mItDvO6UvcSdsOTHPS2eJel6VNWK8n2vBQRPm1NvJRL/aXL6Ig4dPmgtdtDejP3Dalj1gLQl1MWNlXgUYYHPI0oxPR06Ccak7dh1SFSrgtxDYF1xManqRQLUmnvAFZsUzCWMgXGSr5c5volSJCOwDiuAwR6kT5HyBgD1z/MHK+n2XnAsncXfNMmwNVRBfKSrYd3Ylsgp4MpejS0dCqosoZAw9u08CNk0WW9ns5a0u1zcpF1el3W1P9P9lOo8zv+f05fH2Ospd1/9TEgjdr7StLjUMi25zC0nKs0Wnfu7MrmT2z4oAqyeC4o2L5ZOLkHrU9sH0bVOHrkc8L20klK3Hy20T8KqpuWI5oVH7i0fqNvNfgQroOVyGp17ETxAAcUFzLEO/NUe2wAXt4sBb7qM5LI3dRX3FS4Jl6tvjqSj8J+9BsbLN6Eqd6x3UPeLfSbKdd5fB32ELV9RdDlpM2gbjZVDjH1rFYbNTpC72D/G+oZW+KAhPRlm/+VuRTd/iDlsds6HBlSb37zl0yQxnBEWvg3MucGGdoOiSoOAfcNPAZnTQbGMwHwSiyI0GyHW7Nh9yF7RkGnAb+cfUP/tGjAhXV8U60KgbUTtYIGvcE8pUfBlOxV1VZeoXM2ccsZ82rFuFl8GR7YuVk6JxN0uXi0m4/uZ5j+Kx068fbOCMDj6Dgx0xyC/y6RBeD7G0orQjw9FNhQa4N8deI61WPOteUvzOnAUfwKCQeIhHgJ2dE1uTg5U5jMdN+cePZO2IBw7/tGkshGMaec02F5kYuD+NpdI3JqjJrJLIXYsJk6ZCFX3RYD2sj/vMLRw4ciTc7sxG75MHFqOCekSujyRc+oaG1R45AzlsKIDlpNOLfbDP+vz/tyg8/H1Gmoj0TEvgORqNq/LDH31J1I8xq/LfdBLJ0AqovCXTXXW9dn/oDqYbClYwdDKSIlaXNQrOzrdYCzaLZZfvjjKnbDFaKBhNN/Kl3AiEkD31zqliIlLfN4A5NroxCPJ4MTde11bTH4So/Vf9XPMN2pnyyIl5+YyMT6NlmtHjJ+9qPIR9aJuoGYRdYErRU6bz9MXzV7KRUIC+LhpzyD34hdo+sQ8G/Ya+flJNlt0wrayejY9xDkPLMj91Uj1NYphv5N+K2+hWIxpGSTglio6DPhXXKInm5sfopb8hMBTLawZZOZw5JgTasITINzTVDJRjophCiI0hJWmzo+LCsT8hwbmyazj0ukDSztLI1Fe4XzsUzDjuu3VNHmG9OUpF0d7d8HuvsVAzI6mgjJxFjiIzy8KpG2Cr+TEzJG2jUfQPn2gpM+xUPoFqbQK/86kgzePpSR736LS1uqt9lkYDdjIwWeO0dGshvyAjWZwIIaqb5noGaSWliopJBNP0079UJNPLZFEpGpeSFg6UevzUHZn7jCzDliZCJLfCU5uV2MyFztwplM/Cqf8WoitoiA+QqMqzVpT+xBGjLJSVaZORib6k0wLcOmeZHeqDE4A1hBTiwAuga5QQaIJSev0O2lEtaY3IolXQAACiAy7ocmfE7i90MiXmtEfOQyrka9LJ4sONv4nfAQII1HKTwnXqRWuiAEWxk/ua/iRlD2rPeu24qK2dMkQMyeesiYtNKWUOWoYSjeth+On07SN+qUv8HxE6gLY3P9AzNNc45HLbZfM/fu53+Jw196mGb/azbNJ57u04Tz18KG3t+Xq3G03S3qGQHwnTsvlbJFRP66iVmjB79I/3Ks7fq7BXREorz3ix+PFG50yydrt7I6ECYorAU9pmjwEAHePjSmSijfoSyiRozwkMT0LLq/UfXW6FKzGIzOWoRWck5q8BcdEP5/kfwuv5hOp+dlLpbRndPFkQZaOfKlMYViULZmRBlaJEoPdrf38IxjvPI3oAAAA");
+    background-size: cover;
+    background-position: center;
+  }
+  .auth-gate-title{ font-family:"Bricolage Grotesque", sans-serif; font-size: 1.25rem; font-weight:600; margin-bottom: 0.5rem; }
+  .auth-gate-sub{ font-size: 0.82rem; color: var(--text-dim); margin: 0 0 1.2rem; }
+  .profile-chips{ display:flex; flex-wrap:wrap; gap: 0.4rem; margin-bottom: 1rem; justify-content:center; }
+  .profile-chip{
+    padding: 0.35rem 0.75rem; border-radius: 999px; border: 1px solid var(--border); background: var(--surface-2);
+    color: var(--text-dim); font-size: 0.78rem; font-weight:600; cursor:pointer;
+  }
+  .profile-chip:hover{ border-color: var(--accent); color: var(--text); }
+  .profile-field{ margin-bottom: 0.9rem; }
+  .profile-field input{
+    width:100%; padding: 0.6rem 0.75rem; border-radius: 8px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text); font-size: 0.95rem; font-family: "IBM Plex Sans", sans-serif;
+    text-align:center;
+  }
+  .gate-error{ min-height: 1em; font-size: 0.78rem; color: var(--short); margin: 0 0 0.6rem; }
+  .gate-start-btn{
+    width:100%; padding: 0.7rem; border-radius: 8px; border:none;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2)); color:#fff;
+    font-weight:700; font-size: 0.92rem; cursor:pointer;
+  }
+  .gate-start-btn:hover{ filter: brightness(1.07); }
+
+  /* ---------- layout ---------- */
+  .layout{
+    display:grid;
+    grid-template-columns: 1fr 340px;
+    grid-template-areas: "chart trade" "tables tables";
+    gap: 1.1rem;
+  }
+  @media (max-width: 880px){
+    .layout{ grid-template-columns: 1fr; grid-template-areas: "chart" "trade" "tables"; }
+  }
+
+  .panel{
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+    box-shadow: var(--shadow); padding: 1.1rem;
+  }
+  .panel + .panel{ margin-top: 1.1rem; }
+  .panel-title{ font-size: 0.95rem; font-weight:600; margin-bottom: 0.85rem; }
+
+  /* ---------- market / chart ---------- */
+  .market-panel{ grid-area: chart; display:flex; flex-direction:column; }
+  .market-header{ display:flex; justify-content: space-between; align-items:flex-start; gap:1rem; flex-wrap:wrap; margin-bottom: 0.9rem; }
+  .market-name{ color: var(--text-dim); font-size: 0.82rem; font-weight:500; }
+  .price-row{ display:flex; align-items:baseline; gap: 0.65rem; margin-top: 0.15rem; }
+  .price{ font-family:"Bricolage Grotesque", sans-serif; font-size: 2.1rem; font-weight:600; letter-spacing: -0.01em; }
+  .price-change{ font-size: 0.95rem; font-weight:600; }
+  .price-change.up{ color: var(--long); }
+  .price-change.down{ color: var(--short); }
+  .market-stats{ display:flex; gap: 1.4rem; }
+  .stat{ display:flex; flex-direction:column; align-items:flex-end; gap: 0.15rem; }
+  .stat-label{ font-size: 0.7rem; text-transform:uppercase; letter-spacing:0.05em; color: var(--text-faint); }
+  .stat-value{ font-size: 0.9rem; font-weight:600; }
+  .stat-value.up{ color: var(--long); } .stat-value.down{ color: var(--short); }
+
+  .anchor-strip{
+    display:flex; align-items:center; gap: 0.6rem; flex-wrap:wrap;
+    background: var(--surface-2); border: 1px solid var(--border); border-radius: 8px;
+    padding: 0.55rem 0.8rem; margin-bottom: 0.9rem; font-size: 0.8rem; color: var(--text-dim);
+  }
+  .anchor-strip .anchor-price{ color: var(--text); font-weight:600; }
+  .anchor-strip .dot{ width:6px; height:6px; border-radius:50%; background: var(--long); flex: none; }
+
+  .timeframe-row{ display:flex; gap: 0.35rem; margin-bottom: 0.7rem; }
+  .tf-btn{
+    padding: 0.3rem 0.65rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface-2);
+    color: var(--text-dim); font-size: 0.75rem; font-weight:600; cursor:pointer;
+  }
+  .tf-btn:hover{ color: var(--text); }
+  .tf-btn.active{ background: var(--accent-soft); color: var(--accent); border-color: var(--accent); }
+
+  .chart-canvas{ width:100%; height: 300px; display:block; border-radius: 8px; }
+
+  /* ---------- account & order ---------- */
+  .trade-panel{ grid-area: trade; }
+  .account-grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 0.8rem 1rem; margin-bottom: 0.9rem; }
+  .account-grid .label{ display:block; font-size: 0.7rem; text-transform:uppercase; letter-spacing:0.05em; color: var(--text-faint); margin-bottom: 0.2rem; }
+  .account-grid .value{ font-size: 1rem; font-weight:600; }
+  .account-grid .value.big{ font-size: 1.35rem; font-family:"Bricolage Grotesque", sans-serif; }
+  .value.up{ color: var(--long); } .value.down{ color: var(--short); }
+
+  .reset-btn{
+    width:100%; padding: 0.55rem; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text-dim); font-size: 0.82rem; font-weight:600; cursor:pointer;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .reset-btn:hover{ color: var(--text); border-color: var(--text-faint); }
+  .reset-btn.confirming{ background: var(--short-soft); color: var(--short); border-color: var(--short); }
+
+  .side-toggle{ display:grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 0.9rem; }
+  .side-btn{
+    padding: 0.55rem; border-radius: 7px; border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-dim); font-weight:600; cursor:pointer; font-size: 0.88rem;
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .side-btn.long.active{ background: var(--long-soft); color: var(--long); border-color: var(--long); }
+  .side-btn.short.active{ background: var(--short-soft); color: var(--short); border-color: var(--short); }
+
+  .field{ display:block; margin-bottom: 0.7rem; }
+  .field-label{ display:flex; justify-content:space-between; font-size: 0.78rem; color: var(--text-dim); margin-bottom: 0.35rem; font-weight:500; }
+  .field-label span#leverageReadout{ color: var(--text); font-weight:600; font-family:"IBM Plex Mono", monospace; }
+  input[type="number"]{
+    width:100%; padding: 0.55rem 0.65rem; border-radius: 7px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text); font-size: 0.95rem; font-family: "IBM Plex Mono", monospace;
+  }
+  input[type="range"]{ width:100%; accent-color: var(--accent); }
+
+  .quick-sizes{ display:grid; grid-template-columns: repeat(4,1fr); gap: 0.4rem; margin: -0.25rem 0 0.8rem; }
+  .quick-sizes button{
+    padding: 0.35rem; font-size: 0.72rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text-dim); cursor:pointer; font-weight:600;
+  }
+  .quick-sizes button:hover{ color: var(--text); }
+
+  .order-preview{ background: var(--surface-2); border-radius: 8px; padding: 0.7rem 0.8rem; margin-bottom: 0.9rem; display:flex; flex-direction:column; gap:0.4rem; }
+  .order-preview div{ display:flex; justify-content:space-between; font-size: 0.8rem; }
+  .order-preview span:first-child{ color: var(--text-dim); }
+  .order-preview span:last-child{ font-family: "IBM Plex Mono", monospace; font-weight:600; }
+
+  .submit-btn{
+    width:100%; padding: 0.75rem; border-radius: 8px; border:none; font-weight:700; font-size: 0.95rem; cursor:pointer;
+    color:#fff; transition: filter 0.15s, opacity 0.15s;
+  }
+  .submit-btn.long{ background: var(--long); }
+  .submit-btn.short{ background: var(--short); }
+  .submit-btn:hover{ filter: brightness(1.07); }
+  .submit-btn:disabled{ opacity: 0.5; cursor:not-allowed; }
+  .hint{ min-height: 1.1em; font-size: 0.76rem; color: var(--warn); margin: 0.5rem 0 0; }
+
+  /* ---------- tables ---------- */
+  .tables-panel{ grid-area: tables; }
+  .tabs-row{ display:flex; gap: 1.4rem; border-bottom: 1px solid var(--border); margin-bottom: 0.9rem; }
+  .table-tab{
+    background:none; border:none; padding: 0 0 0.7rem; font-size: 0.88rem; font-weight:600; color: var(--text-faint);
+    cursor:pointer; border-bottom: 2px solid transparent; margin-bottom:-1px;
+  }
+  .table-tab.active{ color: var(--text); border-color: var(--accent); }
+  .table-tab span{ color: var(--text-faint); font-weight:500; margin-left: 0.3rem; }
+
+  .table-wrap{ overflow-x: auto; }
+  table{ width:100%; border-collapse: collapse; font-size: 0.85rem; }
+  thead th{
+    text-align:right; font-size: 0.7rem; text-transform:uppercase; letter-spacing:0.04em; color: var(--text-faint);
+    font-weight:600; padding: 0 0.5rem 0.5rem; white-space:nowrap;
+  }
+  thead th:first-child, tbody td:first-child{ text-align:left; }
+  tbody td{ padding: 0.55rem 0.5rem; border-top: 1px solid var(--border); text-align:right; white-space:nowrap; }
+  tbody tr:hover{ background: var(--surface-2); }
+
+  .chip{ display:inline-block; padding: 0.15rem 0.5rem; border-radius: 999px; font-size: 0.72rem; font-weight:700; text-transform:uppercase; letter-spacing: 0.03em; }
+  .chip.long{ background: var(--long-soft); color: var(--long); }
+  .chip.short{ background: var(--short-soft); color: var(--short); }
+  .chip.liquidated{ background: var(--warn-soft); color: var(--warn); }
+  .chip.closed{ background: var(--surface-2); color: var(--text-dim); }
+
+  .close-btn{
+    padding: 0.3rem 0.6rem; border-radius: 6px; border: 1px solid var(--border); background: var(--surface);
+    color: var(--text-dim); font-size: 0.75rem; font-weight:600; cursor:pointer;
+  }
+  .close-btn:hover{ color: var(--short); border-color: var(--short); }
+
+  .empty-state{ text-align:center; color: var(--text-faint); font-size: 0.85rem; padding: 1.6rem 0; }
+
+  /* ---------- footer ---------- */
+  .disclaimer{ margin-top: 1.6rem; padding-top: 1.2rem; border-top: 1px solid var(--border); }
+  .disclaimer p{ font-size: 0.76rem; color: var(--text-faint); max-width: 82ch; margin: 0; }
+  .disclaimer p + p{ margin-top: 0.5rem; }
+  .whitepaper-link{
+    display:inline-block; margin-top: 1rem; font-size: 0.82rem; font-weight:600;
+    color: var(--accent); text-decoration:none;
+    background: none; border: none; padding: 0; cursor: pointer; font-family: inherit;
+  }
+  .whitepaper-link:hover{ text-decoration: underline; }
+
+  /* ---------- whitepaper overlay ---------- */
+  .wp-overlay{
+    position: fixed; inset: 0; z-index: 500; display: none; flex-direction: column;
+    background: var(--bg);
+  }
+  .wp-overlay.open{ display: flex; }
+  .wp-overlay-bar{
+    display:flex; align-items:center; flex: 0 0 auto;
+    padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); background: var(--surface);
+  }
+  .wp-close-btn{
+    display:inline-flex; align-items:center; gap: 0.4rem;
+    padding: 0.4rem 0.7rem; border-radius: 6px; border: 1px solid var(--border);
+    background: var(--surface-2); color: var(--text); font-size: 0.82rem; font-weight:600;
+    cursor:pointer; font-family: inherit;
+  }
+  .wp-close-btn:hover{ border-color: var(--accent); color: var(--accent); }
+  .wp-overlay iframe{
+    flex: 1 1 auto; width: 100%; border: 0; background: var(--bg);
+  }
+
+  @media (prefers-reduced-motion: no-preference){
+    .tab, .side-btn, .submit-btn, .reset-btn{ transition-duration: 0.18s; }
+  }
+</style>
+
+<div class="auth-gate" id="authGate" hidden>
+  <div class="auth-gate-card">
+    <div class="auth-gate-mark" aria-hidden="true"></div>
+    <h1 class="auth-gate-title">Who's trading?</h1>
+    <p class="auth-gate-sub">A name to keep your paper account separate from anyone else using this browser. No password — just a label stored locally here.</p>
+    <div class="profile-chips" id="profileChips"></div>
+    <div class="profile-field">
+      <input type="text" id="profileNameInput" placeholder="e.g. Charles" maxlength="24" autocomplete="off">
+    </div>
+    <p class="gate-error" id="gateError" role="alert"></p>
+    <button type="button" class="gate-start-btn" id="gateStartBtn">Start trading</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Spaceman Perps</span>
+    </div>
+    <div class="account-chip">
+      <span class="num" id="accountLabel">—</span>
+      <button type="button" class="switch-btn" id="switchAccountBtn">Switch</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="panel market-panel">
+      <div class="market-header">
+        <div>
+          <div class="market-name" id="marketName">Cardano · ADA-USD perpetual</div>
+          <div class="price-row">
+            <span class="price num" id="priceValue">$0.0000</span>
+            <span class="price-change num" id="priceChange">+0.00%</span>
+          </div>
+        </div>
+        <div class="market-stats">
+          <div class="stat">
+            <span class="stat-label">Funding rate</span>
+            <span class="stat-value num" id="fundingRate">+0.0000%</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Next funding</span>
+            <span class="stat-value num" id="fundingCountdown">0:30</span>
+          </div>
+        </div>
+      </div>
+      <div class="anchor-strip">
+        <span class="dot" aria-hidden="true"></span>
+        <span>Real ADA/USD spot anchor: <span class="anchor-price num" id="anchorPrice">$0.0000</span></span>
+        <span>·</span>
+        <span id="anchorSource">public spot price</span>
+        <span>·</span>
+        <span>refreshed <span id="anchorAge">just now</span></span>
+      </div>
+      <div class="timeframe-row" id="timeframeRow">
+        <button type="button" class="tf-btn" data-tf="5m">5m</button>
+        <button type="button" class="tf-btn" data-tf="15m">15m</button>
+        <button type="button" class="tf-btn active" data-tf="1h">1H</button>
+        <button type="button" class="tf-btn" data-tf="1d">1D</button>
+        <button type="button" class="tf-btn" data-tf="1w">1W</button>
+      </div>
+      <canvas class="chart-canvas" id="chart"></canvas>
+    </section>
+
+    <aside class="trade-panel">
+      <div class="panel account-panel">
+        <h2 class="panel-title">Account</h2>
+        <div class="account-grid">
+          <div><span class="label">Equity</span><span class="value big num" id="equityValue">$0.00</span></div>
+          <div><span class="label">Wallet balance</span><span class="value num" id="balanceValue">$0.00</span></div>
+          <div><span class="label">Margin used</span><span class="value num" id="marginUsedValue">$0.00</span></div>
+          <div><span class="label">Unrealized P&amp;L</span><span class="value num" id="upnlValue">$0.00</span></div>
+        </div>
+        <button class="reset-btn" id="resetBtn">Reset paper account</button>
+      </div>
+
+      <div class="panel order-panel">
+        <h2 class="panel-title">New position</h2>
+        <div class="side-toggle">
+          <button class="side-btn long active" data-side="long">Long</button>
+          <button class="side-btn short" data-side="short">Short</button>
+        </div>
+        <label class="field">
+          <span class="field-label">Size (USD notional)</span>
+          <input type="number" id="sizeInput" min="0" step="10" value="500" inputmode="decimal">
+        </label>
+        <div class="quick-sizes">
+          <button type="button" data-pct="25">25%</button>
+          <button type="button" data-pct="50">50%</button>
+          <button type="button" data-pct="75">75%</button>
+          <button type="button" data-pct="100">Max</button>
+        </div>
+        <label class="field">
+          <span class="field-label">Leverage <span id="leverageReadout" class="num">10×</span></span>
+          <input type="range" id="leverageSlider" min="1" max="50" value="10">
+        </label>
+        <div class="order-preview">
+          <div><span>Margin required</span><span class="num" id="previewMargin">$0.00</span></div>
+          <div><span>Est. liquidation price</span><span class="num" id="previewLiq">$0.00</span></div>
+          <div><span>Taker fee</span><span class="num" id="previewFee">$0.00</span></div>
+        </div>
+        <button class="submit-btn long" id="submitBtn">Open long</button>
+        <p class="hint" id="orderHint" role="status"></p>
+      </div>
+    </aside>
+
+    <section class="panel tables-panel">
+      <div class="tabs-row">
+        <button class="table-tab active" data-table="positions">Open positions <span id="posCount">(0)</span></button>
+        <button class="table-tab" data-table="history">History <span id="histCount">(0)</span></button>
+      </div>
+      <div class="table-wrap">
+        <table id="positionsTable">
+          <thead><tr>
+            <th>Side</th><th>Size</th><th>Leverage</th><th>Entry</th><th>Mark</th><th>Liq. price</th><th>P&amp;L</th><th></th>
+          </tr></thead>
+          <tbody id="positionsBody"></tbody>
+        </table>
+        <table id="historyTable" hidden>
+          <thead><tr>
+            <th>Side</th><th>Size</th><th>Leverage</th><th>Entry</th><th>Exit</th><th>Result</th><th>P&amp;L</th><th>Closed</th>
+          </tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
+      <p class="empty-state" id="emptyState">No open positions yet — place your first paper trade above.</p>
+    </section>
+  </div>
+
+  <footer class="disclaimer">
+    <p>Spaceman Perps is an offline simulation for learning perpetual-futures mechanics — isolated margin, leverage, funding, and liquidation — using play money only. No real funds, exchange, or order book are involved.</p>
+    <p>The name you enter is just a local label — it keeps separate paper accounts for people sharing one browser, with no password and no data leaving this device. It doesn't sync across other browsers or devices: the same name on a different computer starts a fresh account there.</p>
+    <p>The ADA/USD <strong>anchor price</strong> is real: where this page can reach a public price source directly, it refreshes about once a minute; where it can't (like this hosted preview), it falls back to a periodic snapshot anchor instead. Between refreshes, the displayed price does small simulated wiggles bounded tightly around that real anchor (clearly separate from it) so the chart doesn't sit frozen — it is not a tick-by-tick live feed. This isn't literally sourced through Charli3's oracle API (that requires a developer API key), though Charli3's own on-chain ADA/USD feed tracks the same underlying market price. Mechanics are loosely modeled on how live products such as Ascend Market and Strike Finance describe leveraged perpetuals, for educational purposes only — not investment advice.</p>
+    <p>The 1D and 1W chart views start out flat because there's no fabricated week of history behind them — they fill in with real variation as the hourly anchor keeps refreshing over time.</p>
+    <button type="button" class="whitepaper-link" id="whitepaperBtn">Whitepaper ↗</button>
+  </footer>
+</div>
+
+<div class="wp-overlay" id="wpOverlay">
+  <div class="wp-overlay-bar">
+    <button type="button" class="wp-close-btn" id="wpCloseBtn">← Back to Spaceman Perps</button>
+  </div>
+  <iframe id="wpFrame" title="Spaceman Perps Whitepaper"></iframe>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ANCHOR_START — updated by a scheduled refresh; do not hand-edit the shape of this object.
+  var REAL_ANCHOR = { price: 0.2170, source: "public spot price", fetchedAt: "2026-08-25T20:25:12Z" };
+  // ANCHOR_END
+
+  var IDENTITY_KEY = "paper-perps-identity-v1";
+  var PROFILES_INDEX_KEY = "paper-perps-profiles-v1";
+  var STARTING_BALANCE = 10000;
+  var MAINT_MARGIN_RATE = 0.006;
+  var TAKER_FEE_RATE = 0.0005;
+  var TICK_MS = 10000;
+  var FUNDING_INTERVAL_MS = 30000;
+  var RAW_POINTS = 360; // 1 hour of 10s ticks
+  var HOURLY_POINTS = 192; // 8 weeks of hourly points
+  var HOUR_MS = 3600000;
+  var DECIMALS = 4;
+  var MIN_SIZE = 10;
+  var DRIFT_BAND = 0.008; // max fractional deviation of simulated price from the real anchor
+  var REVERSION = 0.06;
+  var SIGMA = 0.0009;
+
+  var TIMEFRAMES = {
+    "5m": { source: "raw", points: 30 },
+    "15m": { source: "raw", points: 90 },
+    "1h": { source: "raw", points: 360 },
+    "1d": { source: "hourly", points: 24 },
+    "1w": { source: "hourly", points: 168 }
+  };
+
+  var els = {};
+  var ui = { side: "long", tableView: "positions", timeframe: "1h" };
+  var state = null;
+  var resetArmed = false;
+  var currentIdentity = null;
+  var tickStarted = false;
+
+  function profileKey(name){
+    return encodeURIComponent(String(name || "").trim().toLowerCase());
+  }
+
+  function storageKeyFor(identity){
+    var key = identity && identity.key ? identity.key : "guest";
+    return "paper-perps-v2:p:" + key;
+  }
+
+  function loadIdentity(){
+    try {
+      var raw = localStorage.getItem(IDENTITY_KEY);
+      if (!raw) return null;
+      var parsed = JSON.parse(raw);
+      if (!parsed || !parsed.name) return null;
+      return parsed;
+    } catch (e) { return null; }
+  }
+  function saveIdentity(identity){
+    try { localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity)); } catch (e) { /* ignore */ }
+  }
+  function clearIdentity(){
+    try { localStorage.removeItem(IDENTITY_KEY); } catch (e) { /* ignore */ }
+  }
+
+  function loadProfilesIndex(){
+    try {
+      var raw = localStorage.getItem(PROFILES_INDEX_KEY);
+      var parsed = raw ? JSON.parse(raw) : [];
+      return Array.isArray(parsed) ? parsed : [];
+    } catch (e) { return []; }
+  }
+  function rememberProfile(identity){
+    try {
+      var list = loadProfilesIndex().filter(function(p){ return p.key !== identity.key; });
+      list.unshift({ key: identity.key, name: identity.name });
+      localStorage.setItem(PROFILES_INDEX_KEY, JSON.stringify(list.slice(0, 8)));
+    } catch (e) { /* ignore */ }
+  }
+
+  function gaussianRandom(){
+    var u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v);
+  }
+
+  function genId(){
+    return "p" + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+  }
+
+  function backfillHourly(){
+    var now = Date.now();
+    var list = [];
+    for (var i = HOURLY_POINTS - 1; i >= 0; i--) {
+      list.push({ t: now - i * HOUR_MS, p: REAL_ANCHOR.price });
+    }
+    return list;
+  }
+
+  function defaultMarketState(){
+    return {
+      price: REAL_ANCHOR.price,
+      history: [{ t: Date.now(), p: REAL_ANCHOR.price }],
+      hourly: backfillHourly(),
+      hourBucketIndex: Math.floor(Date.now() / HOUR_MS),
+      fundingRate: 0,
+      anchorFetchedAt: REAL_ANCHOR.fetchedAt
+    };
+  }
+
+  function defaultState(){
+    return {
+      balance: STARTING_BALANCE,
+      positions: [],
+      history: [],
+      market: defaultMarketState(),
+      nextFundingAt: Date.now() + FUNDING_INTERVAL_MS
+    };
+  }
+
+  function loadState(){
+    try {
+      var raw = localStorage.getItem(storageKeyFor(currentIdentity));
+      if (!raw) return defaultState();
+      var parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed.balance !== "number" || !parsed.market) return defaultState();
+      if (typeof parsed.market.price !== "number") parsed.market = defaultMarketState();
+      if (!Array.isArray(parsed.market.history) || parsed.market.history.length === 0) {
+        parsed.market.history = [{ t: Date.now(), p: parsed.market.price }];
+      }
+      if (typeof parsed.market.fundingRate !== "number") parsed.market.fundingRate = 0;
+      if (!Array.isArray(parsed.market.hourly) || parsed.market.hourly.length === 0) {
+        parsed.market.hourly = backfillHourly();
+      }
+      if (typeof parsed.market.hourBucketIndex !== "number") {
+        parsed.market.hourBucketIndex = Math.floor(Date.now() / HOUR_MS);
+      }
+      if (!Array.isArray(parsed.positions)) parsed.positions = [];
+      if (!Array.isArray(parsed.history)) parsed.history = [];
+      if (!parsed.nextFundingAt) parsed.nextFundingAt = Date.now() + FUNDING_INTERVAL_MS;
+
+      // A fresh real anchor was published since this browser last saved state — snap to it
+      // rather than let a stale simulated price sit far from the real refreshed number.
+      if (parsed.market.anchorFetchedAt !== REAL_ANCHOR.fetchedAt) {
+        parsed.market.price = REAL_ANCHOR.price;
+        parsed.market.anchorFetchedAt = REAL_ANCHOR.fetchedAt;
+        parsed.market.history.push({ t: Date.now(), p: REAL_ANCHOR.price });
+      }
+      return parsed;
+    } catch (e) {
+      return defaultState();
+    }
+  }
+
+  function saveState(){
+    try {
+      var h = state.market.history;
+      if (h.length > RAW_POINTS) state.market.history = h.slice(h.length - RAW_POINTS);
+      var hr = state.market.hourly;
+      if (hr.length > HOURLY_POINTS) state.market.hourly = hr.slice(hr.length - HOURLY_POINTS);
+      localStorage.setItem(storageKeyFor(currentIdentity), JSON.stringify(state));
+    } catch (e) { /* private mode / quota — ignore, in-memory state still works */ }
+  }
+
+  function fmtUSD(n){
+    if (!isFinite(n)) n = 0;
+    var sign = n < 0 ? "-" : "";
+    return sign + "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function fmtPrice(n){
+    if (!isFinite(n)) n = 0;
+    return "$" + n.toLocaleString("en-US", { minimumFractionDigits: DECIMALS, maximumFractionDigits: DECIMALS });
+  }
+  function fmtPct(n){
+    var s = n >= 0 ? "+" : "";
+    return s + (n * 100).toFixed(2) + "%";
+  }
+  function fmtSignedUSD(n){
+    var s = n >= 0 ? "+" : "-";
+    return s + "$" + Math.abs(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function fmtTime(ts){
+    var d = new Date(ts);
+    return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+  function fmtAge(ms){
+    var mins = Math.floor(ms / 60000);
+    if (mins < 1) return "just now";
+    if (mins === 1) return "1 min ago";
+    if (mins < 60) return mins + " min ago";
+    var hrs = Math.floor(mins / 60);
+    var remMins = mins % 60;
+    return hrs + "h " + remMins + "m ago";
+  }
+
+  function quantity(pos){ return pos.notional / pos.entryPrice; }
+  function sideSign(pos){ return pos.side === "long" ? 1 : -1; }
+  function unrealizedPnL(pos, mark){ return quantity(pos) * (mark - pos.entryPrice) * sideSign(pos); }
+  function maintenanceMargin(pos){ return pos.notional * MAINT_MARGIN_RATE; }
+  function liqPrice(pos){
+    var q = quantity(pos), sign = sideSign(pos), mm = maintenanceMargin(pos);
+    var p = pos.entryPrice + sign * (mm - pos.margin) / q;
+    return Math.max(p, 0);
+  }
+
+  function simulatePrice(mkt){
+    var anchor = REAL_ANCHOR.price;
+    var z = gaussianRandom();
+    var burst = Math.random() < 0.05 ? (1.4 + Math.random() * 1.2) : 1;
+    var reversion = REVERSION * ((anchor - mkt.price) / mkt.price);
+    var move = reversion + SIGMA * burst * z;
+    var next = mkt.price * (1 + move);
+    var lo = anchor * (1 - DRIFT_BAND), hi = anchor * (1 + DRIFT_BAND);
+    if (next < lo) next = lo;
+    if (next > hi) next = hi;
+    mkt.price = next;
+    mkt.history.push({ t: Date.now(), p: next });
+    if (mkt.history.length > RAW_POINTS) mkt.history.shift();
+  }
+
+  function maybeRollHourly(mkt){
+    var idx = Math.floor(Date.now() / HOUR_MS);
+    if (typeof mkt.hourBucketIndex !== "number") { mkt.hourBucketIndex = idx; return; }
+    if (idx > mkt.hourBucketIndex) {
+      mkt.hourly.push({ t: Date.now(), p: mkt.price });
+      if (mkt.hourly.length > HOURLY_POINTS) mkt.hourly.shift();
+      mkt.hourBucketIndex = idx;
+    }
+  }
+
+  function getChartPoints(){
+    var tf = TIMEFRAMES[ui.timeframe] || TIMEFRAMES["1h"];
+    var arr = tf.source === "hourly" ? state.market.hourly : state.market.history;
+    if (!arr || arr.length === 0) return [{ t: Date.now(), p: state.market.price }];
+    return arr.length > tf.points ? arr.slice(arr.length - tf.points) : arr.slice();
+  }
+
+  function fmtAxisLabel(ts){
+    var d = new Date(ts);
+    var tf = ui.timeframe;
+    if (tf === "1w") return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    if (tf === "1d") return d.toLocaleDateString("en-US", { month: "short", day: "numeric" }) + " " + d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+    return d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  }
+
+  function computeFundingRate(){
+    var t = Date.now() / 1000;
+    var base = 0.00015 * Math.sin(t / 40);
+    var noise = (Math.random() - 0.5) * 0.00008;
+    var rate = base + noise;
+    return Math.max(-0.0006, Math.min(0.0006, rate));
+  }
+
+  function checkLiquidations(){
+    var mark = state.market.price;
+    var stillOpen = [];
+    for (var i = 0; i < state.positions.length; i++) {
+      var pos = state.positions[i];
+      var equity = pos.margin + unrealizedPnL(pos, mark);
+      var mm = maintenanceMargin(pos);
+      if (equity <= mm) {
+        state.history.unshift({
+          side: pos.side, notional: pos.notional, leverage: pos.leverage,
+          entryPrice: pos.entryPrice, exitPrice: mark, pnl: -pos.margin, reason: "liquidated", closedAt: Date.now()
+        });
+      } else {
+        stillOpen.push(pos);
+      }
+    }
+    state.positions = stillOpen;
+  }
+
+  function maybeApplyFunding(){
+    if (Date.now() < state.nextFundingAt) return;
+    var rate = computeFundingRate();
+    state.market.fundingRate = rate;
+    for (var i = 0; i < state.positions.length; i++) {
+      var pos = state.positions[i];
+      var payment = -sideSign(pos) * rate * pos.notional;
+      state.balance += payment;
+    }
+    state.nextFundingAt = Date.now() + FUNDING_INTERVAL_MS;
+  }
+
+  function openPosition(side, notionalUSD, leverage){
+    if (!(notionalUSD > 0)) return { ok: false, msg: "Enter a size greater than $0." };
+    if (notionalUSD < MIN_SIZE) return { ok: false, msg: "Minimum size is " + fmtUSD(MIN_SIZE) + "." };
+    var margin = notionalUSD / leverage;
+    var fee = notionalUSD * TAKER_FEE_RATE;
+    if (margin + fee > state.balance + 1e-9) return { ok: false, msg: "Not enough available balance for that size and leverage." };
+    state.balance -= (margin + fee);
+    state.positions.unshift({
+      id: genId(), side: side, notional: notionalUSD, leverage: leverage,
+      margin: margin, entryPrice: state.market.price, openedAt: Date.now()
+    });
+    return { ok: true };
+  }
+
+  function closePosition(id){
+    var idx = -1;
+    for (var i = 0; i < state.positions.length; i++) if (state.positions[i].id === id) { idx = i; break; }
+    if (idx === -1) return;
+    var pos = state.positions[idx];
+    var mark = state.market.price;
+    var pnl = unrealizedPnL(pos, mark);
+    var fee = pos.notional * TAKER_FEE_RATE;
+    state.balance += pos.margin + pnl - fee;
+    state.positions.splice(idx, 1);
+    state.history.unshift({
+      side: pos.side, notional: pos.notional, leverage: pos.leverage,
+      entryPrice: pos.entryPrice, exitPrice: mark, pnl: pnl - fee, reason: "closed", closedAt: Date.now()
+    });
+  }
+
+  function resetAccount(){
+    state = defaultState();
+    saveState();
+    renderAll();
+  }
+
+  // ---------------- profile gate ----------------
+
+  function renderAccountChip(){
+    if (!currentIdentity) return;
+    els.accountLabel.textContent = currentIdentity.name;
+  }
+
+  function renderProfileChips(){
+    var list = loadProfilesIndex();
+    els.profileChips.innerHTML = "";
+    list.forEach(function(p){
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "profile-chip";
+      btn.textContent = p.name;
+      btn.addEventListener("click", function(){ startProfile(p.name); });
+      els.profileChips.appendChild(btn);
+    });
+  }
+
+  function showGate(){
+    renderProfileChips();
+    els.gateError.textContent = "";
+    els.profileNameInput.value = "";
+    els.authGate.hidden = false;
+    els.profileNameInput.focus();
+  }
+  function hideGate(){ els.authGate.hidden = true; }
+
+  function startProfile(rawName){
+    var name = String(rawName || "").trim();
+    if (!name) name = "Guest";
+    var identity = { name: name, key: profileKey(name) };
+    saveIdentity(identity);
+    rememberProfile(identity);
+    enterApp(identity);
+  }
+
+  function switchAccount(){
+    clearIdentity();
+    window.location.reload();
+  }
+
+  function enterApp(identity){
+    currentIdentity = identity;
+    hideGate();
+    renderAccountChip();
+    state = loadState();
+    renderAll();
+    if (!tickStarted) {
+      tickStarted = true;
+      setInterval(tick, TICK_MS);
+    }
+  }
+
+  // ---------------- rendering ----------------
+
+  function renderHeader(){
+    var mkt = state.market;
+    els.priceValue.textContent = fmtPrice(mkt.price);
+    var first = mkt.history[0].p;
+    var chg = (mkt.price - first) / first;
+    els.priceChange.textContent = fmtPct(chg) + " session";
+    els.priceChange.className = "price-change num " + (chg >= 0 ? "up" : "down");
+
+    var fr = mkt.fundingRate;
+    els.fundingRate.textContent = fmtPct(fr);
+    els.fundingRate.className = "stat-value num " + (fr >= 0 ? "up" : "down");
+
+    var remain = Math.max(0, Math.round((state.nextFundingAt - Date.now()) / 1000));
+    var m = Math.floor(remain / 60), s = remain % 60;
+    els.fundingCountdown.textContent = m + ":" + (s < 10 ? "0" : "") + s;
+
+    els.anchorPrice.textContent = fmtPrice(REAL_ANCHOR.price);
+    els.anchorSource.textContent = REAL_ANCHOR.source;
+    var ageMs = Date.now() - new Date(REAL_ANCHOR.fetchedAt).getTime();
+    els.anchorAge.textContent = fmtAge(Math.max(0, ageMs));
+  }
+
+  function renderChart(){
+    var canvas = els.chart;
+    var dpr = window.devicePixelRatio || 1;
+    var rect = canvas.getBoundingClientRect();
+    var w = Math.max(rect.width, 100), h = canvas.clientHeight || 300;
+    if (canvas.width !== Math.round(w * dpr) || canvas.height !== Math.round(h * dpr)) {
+      canvas.width = Math.round(w * dpr);
+      canvas.height = Math.round(h * dpr);
+    }
+    var ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    var pts = getChartPoints();
+    if (pts.length < 2) return;
+
+    var prices = pts.map(function(p){ return p.p; });
+    var min = Math.min.apply(null, prices), max = Math.max.apply(null, prices);
+    if (min === max) { min *= 0.995; max *= 1.005; }
+    var pad = (max - min) * 0.12;
+    min -= pad; max += pad;
+
+    var styles = getComputedStyle(document.documentElement);
+    var trendUp = prices[prices.length - 1] >= prices[0];
+    var lineColor = trendUp ? styles.getPropertyValue("--long").trim() : styles.getPropertyValue("--short").trim();
+    var gridColor = styles.getPropertyValue("--border").trim();
+    var textColor = styles.getPropertyValue("--text-faint").trim();
+    var accentColor = styles.getPropertyValue("--accent").trim();
+
+    var padLeft = 8, padRight = 56, padTop = 10, padBottom = 24;
+    var plotW = w - padLeft - padRight, plotH = h - padTop - padBottom;
+
+    ctx.strokeStyle = gridColor;
+    ctx.lineWidth = 1;
+    ctx.font = "11px 'IBM Plex Mono', monospace";
+    ctx.fillStyle = textColor;
+    var gridLines = 4;
+    for (var g = 0; g <= gridLines; g++) {
+      var gy = padTop + (plotH * g) / gridLines;
+      ctx.beginPath();
+      ctx.moveTo(padLeft, gy);
+      ctx.lineTo(padLeft + plotW, gy);
+      ctx.stroke();
+      var priceAtLine = max - ((max - min) * g) / gridLines;
+      ctx.fillText(fmtPrice(priceAtLine), padLeft + plotW + 8, gy + 3);
+    }
+
+    function xAt(i){ return padLeft + (plotW * i) / (pts.length - 1); }
+    function yAt(p){ return padTop + plotH - ((p - min) / (max - min)) * plotH; }
+
+    // real anchor reference line
+    if (REAL_ANCHOR.price >= min && REAL_ANCHOR.price <= max) {
+      var ay = yAt(REAL_ANCHOR.price);
+      ctx.save();
+      ctx.setLineDash([4, 4]);
+      ctx.strokeStyle = accentColor;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(padLeft, ay);
+      ctx.lineTo(padLeft + plotW, ay);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    ctx.beginPath();
+    ctx.moveTo(xAt(0), yAt(prices[0]));
+    for (var i = 1; i < pts.length; i++) ctx.lineTo(xAt(i), yAt(prices[i]));
+    var grad = ctx.createLinearGradient(0, padTop, 0, padTop + plotH);
+    grad.addColorStop(0, lineColor + "33");
+    grad.addColorStop(1, lineColor + "00");
+    ctx.lineTo(xAt(pts.length - 1), padTop + plotH);
+    ctx.lineTo(xAt(0), padTop + plotH);
+    ctx.closePath();
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    ctx.beginPath();
+    ctx.moveTo(xAt(0), yAt(prices[0]));
+    for (var j = 1; j < pts.length; j++) ctx.lineTo(xAt(j), yAt(prices[j]));
+    ctx.strokeStyle = lineColor;
+    ctx.lineWidth = 1.75;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(xAt(pts.length - 1), yAt(prices[prices.length - 1]), 3, 0, Math.PI * 2);
+    ctx.fillStyle = lineColor;
+    ctx.fill();
+
+    ctx.fillStyle = textColor;
+    ctx.font = "10.5px 'IBM Plex Mono', monospace";
+    ctx.textAlign = "left";
+    ctx.fillText(fmtAxisLabel(pts[0].t), padLeft, h - 7);
+    ctx.textAlign = "right";
+    ctx.fillText(fmtAxisLabel(pts[pts.length - 1].t), padLeft + plotW, h - 7);
+    ctx.textAlign = "left";
+  }
+
+  function totalUnrealized(){
+    var sum = 0;
+    for (var i = 0; i < state.positions.length; i++) sum += unrealizedPnL(state.positions[i], state.market.price);
+    return sum;
+  }
+  function totalMarginUsed(){
+    var sum = 0;
+    for (var i = 0; i < state.positions.length; i++) sum += state.positions[i].margin;
+    return sum;
+  }
+
+  function renderAccount(){
+    var upnl = totalUnrealized();
+    var marginUsed = totalMarginUsed();
+    var equity = state.balance + marginUsed + upnl;
+    els.equityValue.textContent = fmtUSD(equity);
+    els.balanceValue.textContent = fmtUSD(state.balance);
+    els.marginUsedValue.textContent = fmtUSD(marginUsed);
+    els.upnlValue.textContent = fmtSignedUSD(upnl);
+    els.upnlValue.className = "value num " + (upnl >= 0 ? "up" : "down");
+  }
+
+  function renderOrderPreview(){
+    var size = parseFloat(els.sizeInput.value) || 0;
+    var leverage = parseInt(els.leverageSlider.value, 10) || 1;
+    var margin = size / leverage;
+    var fee = size * TAKER_FEE_RATE;
+    var fakePos = { notional: size, leverage: leverage, margin: margin, entryPrice: state.market.price, side: ui.side };
+    els.previewMargin.textContent = fmtUSD(margin);
+    els.previewLiq.textContent = size > 0 ? fmtPrice(liqPrice(fakePos)) : "—";
+    els.previewFee.textContent = fmtUSD(fee);
+    els.leverageReadout.textContent = leverage + "×";
+
+    var available = state.balance;
+    var insufficient = margin + fee > available + 1e-9;
+    var tooSmall = size > 0 && size < MIN_SIZE;
+    els.submitBtn.disabled = size <= 0 || insufficient || tooSmall;
+    els.submitBtn.textContent = "Open " + ui.side;
+    els.submitBtn.className = "submit-btn " + ui.side;
+    if (insufficient) els.orderHint.textContent = "Not enough available balance for that size and leverage.";
+    else if (tooSmall) els.orderHint.textContent = "Minimum size is " + fmtUSD(MIN_SIZE) + ".";
+    else els.orderHint.textContent = "";
+  }
+
+  function positionRow(pos){
+    var mark = state.market.price;
+    var pnl = unrealizedPnL(pos, mark);
+    var pnlPct = pnl / pos.margin;
+    var tr = document.createElement("tr");
+    tr.innerHTML =
+      "<td><span class='chip " + pos.side + "'>" + pos.side + "</span></td>" +
+      "<td class='num'>" + fmtUSD(pos.notional) + "</td>" +
+      "<td class='num'>" + pos.leverage + "×</td>" +
+      "<td class='num'>" + fmtPrice(pos.entryPrice) + "</td>" +
+      "<td class='num'>" + fmtPrice(mark) + "</td>" +
+      "<td class='num'>" + fmtPrice(liqPrice(pos)) + "</td>" +
+      "<td class='num' style='color:var(--" + (pnl >= 0 ? "long" : "short") + ")'>" +
+        fmtSignedUSD(pnl) + " (" + fmtPct(pnlPct) + ")</td>" +
+      "<td></td>";
+    var closeCell = tr.lastElementChild;
+    var btn = document.createElement("button");
+    btn.className = "close-btn";
+    btn.type = "button";
+    btn.textContent = "Close";
+    btn.addEventListener("click", function(){ closePosition(pos.id); renderAll(); });
+    closeCell.appendChild(btn);
+    return tr;
+  }
+
+  function historyRow(row){
+    var tr = document.createElement("tr");
+    var resultLabel = row.reason === "liquidated" ? "liquidated" : "closed";
+    tr.innerHTML =
+      "<td><span class='chip " + row.side + "'>" + row.side + "</span></td>" +
+      "<td class='num'>" + fmtUSD(row.notional) + "</td>" +
+      "<td class='num'>" + row.leverage + "×</td>" +
+      "<td class='num'>" + fmtPrice(row.entryPrice) + "</td>" +
+      "<td class='num'>" + fmtPrice(row.exitPrice) + "</td>" +
+      "<td><span class='chip " + resultLabel + "'>" + resultLabel + "</span></td>" +
+      "<td class='num' style='color:var(--" + (row.pnl >= 0 ? "long" : "short") + ")'>" + fmtSignedUSD(row.pnl) + "</td>" +
+      "<td class='num'>" + fmtTime(row.closedAt) + "</td>";
+    return tr;
+  }
+
+  function renderTables(){
+    els.positionsBody.innerHTML = "";
+    state.positions.forEach(function(pos){ els.positionsBody.appendChild(positionRow(pos)); });
+    els.historyBody.innerHTML = "";
+    state.history.slice(0, 50).forEach(function(row){ els.historyBody.appendChild(historyRow(row)); });
+
+    els.posCount.textContent = "(" + state.positions.length + ")";
+    els.histCount.textContent = "(" + state.history.length + ")";
+
+    var showPositions = ui.tableView === "positions";
+    els.positionsTable.hidden = !showPositions;
+    els.historyTable.hidden = showPositions;
+    var empty = showPositions ? state.positions.length === 0 : state.history.length === 0;
+    els.emptyState.hidden = !empty;
+    els.emptyState.textContent = showPositions
+      ? "No open positions yet — place your first paper trade above."
+      : "No closed trades yet.";
+
+    document.querySelectorAll(".table-tab").forEach(function(btn){
+      btn.classList.toggle("active", btn.getAttribute("data-table") === ui.tableView);
+    });
+  }
+
+  function renderAll(){
+    renderHeader();
+    renderChart();
+    renderAccount();
+    renderOrderPreview();
+    renderTables();
+  }
+
+  // ---------------- events ----------------
+
+  function wireEvents(){
+    document.querySelectorAll(".side-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        ui.side = btn.getAttribute("data-side");
+        document.querySelectorAll(".side-btn").forEach(function(b){ b.classList.toggle("active", b === btn); });
+        renderOrderPreview();
+      });
+    });
+
+    document.querySelectorAll(".quick-sizes button").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        var pct = parseInt(btn.getAttribute("data-pct"), 10) / 100;
+        var leverage = parseInt(els.leverageSlider.value, 10) || 1;
+        var maxNotional = state.balance * leverage / (1 + TAKER_FEE_RATE * leverage);
+        els.sizeInput.value = Math.max(0, Math.floor(maxNotional * pct));
+        renderOrderPreview();
+      });
+    });
+
+    els.sizeInput.addEventListener("input", renderOrderPreview);
+    els.leverageSlider.addEventListener("input", renderOrderPreview);
+
+    els.submitBtn.addEventListener("click", function(){
+      var size = parseFloat(els.sizeInput.value) || 0;
+      var leverage = parseInt(els.leverageSlider.value, 10) || 1;
+      var result = openPosition(ui.side, size, leverage);
+      if (!result.ok) {
+        els.orderHint.textContent = result.msg;
+        return;
+      }
+      saveState();
+      renderAll();
+    });
+
+    els.resetBtn.addEventListener("click", function(){
+      if (!resetArmed) {
+        resetArmed = true;
+        els.resetBtn.textContent = "Click again to confirm reset";
+        els.resetBtn.classList.add("confirming");
+        setTimeout(function(){
+          resetArmed = false;
+          els.resetBtn.textContent = "Reset paper account";
+          els.resetBtn.classList.remove("confirming");
+        }, 3000);
+        return;
+      }
+      resetArmed = false;
+      els.resetBtn.textContent = "Reset paper account";
+      els.resetBtn.classList.remove("confirming");
+      resetAccount();
+    });
+
+    document.querySelectorAll(".table-tab").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        ui.tableView = btn.getAttribute("data-table");
+        renderTables();
+      });
+    });
+
+    window.addEventListener("resize", renderChart);
+
+    document.querySelectorAll(".tf-btn").forEach(function(btn){
+      btn.addEventListener("click", function(){
+        ui.timeframe = btn.getAttribute("data-tf");
+        document.querySelectorAll(".tf-btn").forEach(function(b){ b.classList.toggle("active", b === btn); });
+        renderChart();
+      });
+    });
+
+    els.switchAccountBtn.addEventListener("click", switchAccount);
+    els.gateStartBtn.addEventListener("click", function(){
+      startProfile(els.profileNameInput.value);
+    });
+    els.profileNameInput.addEventListener("keydown", function(e){
+      if (e.key === "Enter") startProfile(els.profileNameInput.value);
+    });
+  }
+
+  function cacheEls(){
+    ["marketName","priceValue","priceChange","fundingRate","fundingCountdown","chart",
+     "anchorPrice","anchorSource","anchorAge",
+     "equityValue","balanceValue","marginUsedValue","upnlValue","resetBtn",
+     "sizeInput","leverageSlider","leverageReadout","previewMargin","previewLiq","previewFee",
+     "submitBtn","orderHint","positionsTable","historyTable","positionsBody","historyBody",
+     "posCount","histCount","emptyState",
+     "authGate","profileChips","profileNameInput","gateError","gateStartBtn",
+     "accountLabel","switchAccountBtn"
+    ].forEach(function(id){ els[id] = document.getElementById(id); });
+  }
+
+  function tick(){
+    simulatePrice(state.market);
+    maybeRollHourly(state.market);
+    checkLiquidations();
+    maybeApplyFunding();
+    renderAll();
+    saveState();
+  }
+
+  function init(){
+    cacheEls();
+    wireEvents();
+    var identity = loadIdentity();
+    if (identity) {
+      enterApp(identity);
+    } else {
+      showGate();
+    }
+  }
+
+  // When self-hosted (off claude.ai), there's no scheduled task rewriting this
+  // file's baked-in REAL_ANCHOR anymore. Instead, a small scheduled script
+  // (see the GitHub Actions workflow) refreshes a tiny anchor.json file
+  // alongside this page every hour. On load we try to fetch it and, if it
+  // succeeds, overwrite the baked-in fallback values in place before the rest
+  // of the app reads REAL_ANCHOR. If the fetch fails (offline, opened via
+  // file://, anchor.json not deployed yet, etc.) we silently keep the
+  // baked-in anchor — the app still works, it just won't be freshly refreshed.
+  function refreshAnchorFromFile(){
+    return new Promise(function(resolve){
+      var done = false;
+      function finish(){ if (!done) { done = true; resolve(); } }
+      try {
+        fetch("anchor.json?t=" + Date.now(), { cache: "no-store" })
+          .then(function(res){
+            if (!res.ok) throw new Error("bad status " + res.status);
+            return res.json();
+          })
+          .then(function(data){
+            if (data && typeof data.price === "number" && data.fetchedAt) {
+              REAL_ANCHOR.price = data.price;
+              if (data.source) REAL_ANCHOR.source = data.source;
+              REAL_ANCHOR.fetchedAt = data.fetchedAt;
+            }
+          })
+          .catch(function(){ /* keep baked-in fallback anchor */ })
+          .then(finish);
+      } catch (e) {
+        finish();
+      }
+      setTimeout(finish, 4000); // never block startup for more than 4s
+    });
+  }
+
+  // Best-effort direct refresh, tried every ~60s while the tab is open. On
+  // claude.ai this will simply fail every time (the Artifact sandbox blocks
+  // requests to hosts other than Google Fonts) and the app quietly keeps
+  // using the anchor.json / baked-in value instead — this is purely an
+  // enhancement for a self-hosted deployment where the browser has normal
+  // internet access.
+  function pollAnchorDirectly(){
+    try {
+      fetch("https://api.coingecko.com/api/v3/simple/price?ids=cardano&vs_currencies=usd", { cache: "no-store" })
+        .then(function(res){ if (!res.ok) throw new Error("bad status " + res.status); return res.json(); })
+        .then(function(data){
+          var price = data && data.cardano && data.cardano.usd;
+          if (typeof price === "number" && price > 0) {
+            REAL_ANCHOR.price = price;
+            REAL_ANCHOR.source = "CoinGecko (public spot price)";
+            REAL_ANCHOR.fetchedAt = new Date().toISOString();
+          }
+        })
+        .catch(function(){ /* CORS blocked, offline, rate-limited, etc. — keep current anchor */ });
+    } catch (e) { /* fetch not available at all — keep current anchor */ }
+  }
+
+  function bootstrap(){
+    refreshAnchorFromFile().then(function(){
+      init();
+      pollAnchorDirectly();
+      setInterval(pollAnchorDirectly, 60000);
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", bootstrap);
+  } else {
+    bootstrap();
+  }
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+
+  var WHITEPAPER_DOC = "<!doctype html>\n<html>\n<head>\n<meta charset=\"utf-8\">\n</head>\n<body>\n<title>Spaceman Perps Whitepaper</title>\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap\" rel=\"stylesheet\">\n\n<style>\n  :root{\n    --bg: #f6f4fb;\n    --surface: #ffffff;\n    --surface-2: #edeaf7;\n    --border: #dcd6ec;\n    --text: #19162a;\n    --text-dim: #5f5a78;\n    --text-faint: #8985a0;\n    --accent: #5b45d6;\n    --accent-2: #3f7bf2;\n    --accent-soft: #ece7fb;\n    --warn: #b9720e;\n    --warn-soft: #fbf0dd;\n    --shadow: 0 1px 2px rgba(20,25,40,0.04), 0 8px 24px -12px rgba(20,25,40,0.10);\n  }\n  @media (prefers-color-scheme: dark){\n    :root:not([data-theme=\"light\"]){\n      --bg: #0a0812;\n      --surface: #14111f;\n      --surface-2: #1c1830;\n      --border: #2c2645;\n      --text: #eae7f7;\n      --text-dim: #948eb0;\n      --text-faint: #625c7c;\n      --accent: #9382ff;\n      --accent-2: #5a8dff;\n      --accent-soft: #241f42;\n      --warn: #f5b94a;\n      --warn-soft: #3a2c10;\n      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px -14px rgba(0,0,0,0.55);\n    }\n  }\n  :root[data-theme=\"dark\"]{\n    --bg: #0a0812;\n    --surface: #14111f;\n    --surface-2: #1c1830;\n    --border: #2c2645;\n    --text: #eae7f7;\n    --text-dim: #948eb0;\n    --text-faint: #625c7c;\n    --accent: #9382ff;\n    --accent-2: #5a8dff;\n    --accent-soft: #241f42;\n    --warn: #f5b94a;\n    --warn-soft: #3a2c10;\n    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 12px 32px -14px rgba(0,0,0,0.55);\n  }\n\n  *{ box-sizing: border-box; }\n  html,body{ margin:0; padding:0; }\n  body{\n    background: var(--bg); color: var(--text);\n    font-family: \"IBM Plex Sans\", ui-sans-serif, system-ui, sans-serif;\n    font-size: 16px; line-height: 1.65; -webkit-font-smoothing: antialiased;\n  }\n  a{ color: var(--accent); }\n  .num{ font-family: \"IBM Plex Mono\", ui-monospace, monospace; font-variant-numeric: tabular-nums; }\n\n  .doc{ max-width: 760px; margin: 0 auto; padding: 3.5rem 1.5rem 4rem; }\n\n  .doc-hero{ text-align:center; margin-bottom: 2.2rem; }\n  .doc-eyebrow{\n    font-size: 0.75rem; letter-spacing: 0.09em; text-transform:uppercase; color: var(--accent);\n    font-weight:700; margin-bottom: 0.7rem;\n  }\n  .doc h1{\n    font-family: \"Bricolage Grotesque\", sans-serif; font-size: 2.7rem; font-weight:700; letter-spacing: -0.01em;\n    margin: 0 0 0.55rem; text-wrap: balance; line-height:1.08;\n    background: linear-gradient(135deg, var(--accent), var(--accent-2));\n    -webkit-background-clip: text; background-clip: text; color: transparent;\n  }\n  .doc-subtitle{ font-size: 1.08rem; color: var(--text-dim); max-width: 52ch; margin: 0 auto 0.9rem; text-wrap: balance; }\n  .doc-meta{ font-size: 0.85rem; color: var(--text-faint); font-family: \"IBM Plex Mono\", monospace; }\n\n\n  .callout{ border-radius: 10px; padding: 1.1rem 1.3rem; margin: 0 0 2.4rem; font-size: 0.92rem; line-height:1.6; }\n  .callout-warn{\n    background: var(--warn-soft); color: var(--text);\n    border: 1px solid color-mix(in srgb, var(--warn) 35%, transparent);\n  }\n  .callout p{ margin:0; }\n  .callout a{ color: var(--accent); font-weight:600; }\n\n  .toc{ background: var(--surface-2); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem 1.7rem; margin-bottom: 2.8rem; }\n  .toc h2{ font-family: \"Bricolage Grotesque\", sans-serif; font-size: 1rem; font-weight:600; margin: 0 0 0.9rem; }\n  .toc ol{ columns: 2; column-gap: 2.2rem; margin: 0; padding-left: 1.25rem; font-size: 0.9rem; }\n  .toc li{ margin-bottom: 0.5rem; break-inside: avoid; }\n  .toc a{ color: var(--text-dim); text-decoration: none; }\n  .toc a:hover{ color: var(--accent); }\n\n  section{ margin-bottom: 2.8rem; scroll-margin-top: 1.5rem; }\n  section h2{\n    font-family: \"Bricolage Grotesque\", sans-serif; font-size: 1.55rem; font-weight:600;\n    margin: 0 0 1rem; padding-bottom: 0.55rem; border-bottom: 1px solid var(--border); text-wrap: balance;\n  }\n  section h3{ font-size: 1.1rem; font-weight:600; margin: 1.5rem 0 0.6rem; color: var(--text); }\n  section p{ max-width: 68ch; margin: 0 0 1.05rem; color: var(--text); }\n  section ul{ max-width: 68ch; margin: 0 0 1.1rem; padding-left: 1.3rem; }\n  section li{ margin-bottom: 0.55rem; }\n\n  .doc-table-wrap{ overflow-x: auto; margin: 1.3rem 0 1.7rem; }\n  table.doc-table{ width:100%; border-collapse: collapse; font-size: 0.86rem; }\n  table.doc-table caption{ text-align:left; font-size: 0.82rem; color: var(--text-faint); margin-bottom: 0.6rem; caption-side: top; }\n  table.doc-table th, table.doc-table td{ padding: 0.6rem 0.75rem; border-bottom: 1px solid var(--border); text-align:left; vertical-align: top; }\n  table.doc-table thead th{\n    background: var(--surface-2); font-size: 0.7rem; text-transform:uppercase; letter-spacing: 0.03em;\n    color: var(--text-faint); font-weight:700;\n  }\n  table.doc-table td.num, table.doc-table th.num{ font-family: \"IBM Plex Mono\", monospace; text-align:right; }\n\n  .doc-footer{ text-align:center; margin-top: 3.2rem; padding-top: 2.2rem; border-top: 1px solid var(--border); }\n  .doc-footer p{ font-size: 0.78rem; color: var(--text-faint); margin: 0 0 1.1rem; }\n  .back-link{ display:inline-block; font-size: 0.88rem; font-weight:600; color: var(--accent); text-decoration:none; }\n  .back-link:hover{ text-decoration: underline; }\n\n  @media (max-width: 560px){\n    .doc h1{ font-size: 2.1rem; }\n    .toc ol{ columns: 1; }\n  }\n</style>\n\n<article class=\"doc\">\n  <header class=\"doc-hero\">\n    <div class=\"doc-eyebrow\">Whitepaper \u00b7 v1.0 (draft)</div>\n    <h1>Spaceman Perps</h1>\n    <p class=\"doc-subtitle\">Cross-Chain, Bitcoin- and TradFi-Margined Perpetual Futures Settled on Cardano</p>\n    <div class=\"doc-meta\">$SPACE Protocol Token \u00b7 August 2026</div>\n  </header>\n\n  <nav class=\"toc\" aria-label=\"Table of contents\">\n    <h2>Table of Contents</h2>\n    <ol>\n      <li><a href=\"#abstract\">1. Abstract</a></li>\n      <li><a href=\"#the-problem\">2. The Problem</a></li>\n      <li><a href=\"#vision\">3. Vision &amp; Design Goals</a></li>\n      <li><a href=\"#product-overview\">4. Product Overview</a></li>\n      <li><a href=\"#margin-system\">5. Multi-Asset Margin System</a></li>\n      <li><a href=\"#architecture\">6. Architecture</a></li>\n      <li><a href=\"#risk-engine\">7. Risk Engine</a></li>\n      <li><a href=\"#fee-structure\">8. Fee Structure</a></li>\n      <li><a href=\"#tokenomics\">9. $SPACE Tokenomics</a></li>\n      <li><a href=\"#staking\">10. Liquid Staking &amp; Fee Distribution</a></li>\n      <li><a href=\"#governance\">11. Governance</a></li>\n      <li><a href=\"#security\">12. Security</a></li>\n      <li><a href=\"#roadmap\">13. Roadmap</a></li>\n      <li><a href=\"#risk-factors\">14. Risk Factors &amp; Disclosures</a></li>\n      <li><a href=\"#conclusion\">15. Conclusion</a></li>\n    </ol>\n  </nav>\n\n  <section id=\"abstract\">\n    <h2>1. Abstract</h2>\n    <p>Spaceman Perps is a decentralized perpetual futures protocol designed to settle on Cardano while sourcing collateral from across the crypto and traditional-finance world. Instead of forcing traders to convert everything into a single wrapped asset before they can open a position, Spaceman Perps accepts native Bitcoin, ADA, major stablecoins, and whitelisted tokenized traditional-finance instruments \u2014 such as tokenized short-duration Treasury or money-market fund shares \u2014 as cross-margin collateral within one unified risk ledger.</p>\n    <p>The protocol combines a deterministic, independently-replayable off-chain matching engine with on-chain settlement, custody attestation, and dispute resolution on Cardano's low-fee, UTXO-based ledger. The result is a venue where a Bitcoin holder, a stablecoin trader, and an institution parking cash in a tokenized Treasury fund can all post their existing holdings as margin and trade the same perpetual futures markets \u2014 crypto majors, FX pairs, commodities, and indices \u2014 without first selling what they hold or trusting a single custodian with it.</p>\n    <p>This document lays out the problem Spaceman Perps is designed to solve, the product and technical architecture, the risk and liquidation framework, the $SPACE token model, and an indicative roadmap. It is a planning document, not a finished specification \u2014 implementation details are expected to change as the design is audited and built out.</p>\n  </section>\n\n  <section id=\"the-problem\">\n    <h2>2. The Problem</h2>\n    <h3>2.1 Bitcoin is the largest pool of crypto collateral and the least usable</h3>\n    <p>Bitcoin represents the largest single pool of value in digital assets, yet almost none of it is usable as margin on-chain without first being wrapped, bridged, or custodied by a centralized intermediary. Wrapping introduces a dependency on whoever mints the wrapped asset; centralized custody reintroduces exactly the counterparty risk that on-chain finance is meant to remove. Most BTC sits idle rather than being put to productive, risk-managed use.</p>\n    <h3>2.2 Perpetuals liquidity is fragmented by chain</h3>\n    <p>The leading perpetual futures venues are concentrated on Ethereum and its rollups, or run as centralized order books off-chain. Cardano \u2014 despite low, predictable fees and a deterministic UTXO settlement model well suited to auditable financial infrastructure \u2014 has no flagship perpetuals venue. Liquidity, market makers, and traders who prefer to settle on Cardano currently have nowhere purpose-built to trade leveraged derivatives.</p>\n    <h3>2.3 Tokenized TradFi collateral has nowhere to go</h3>\n    <p>Tokenized Treasury bills and money-market fund shares have become one of the fastest-growing categories of real-world assets on-chain, but almost no derivatives venue accepts them as margin. An institution or treasury desk holding a tokenized Treasury product today has to choose between earning yield on it or unwinding it to trade \u2014 it cannot do both at once.</p>\n    <h3>2.4 Cross-chain UX still means trusting a bridge</h3>\n    <p>Traders who want to use assets native to different chains as unified collateral are usually routed through a general-purpose bridge, inheriting that bridge's smart-contract and validator-set risk as a precondition of trading. Bridge failures have been among the largest sources of loss in the industry, and that risk is rarely disclosed clearly to the end trader.</p>\n  </section>\n\n  <section id=\"vision\">\n    <h2>3. Vision &amp; Design Goals</h2>\n    <p>Spaceman Perps is designed around five goals:</p>\n    <ul>\n      <li><strong>Capital efficiency</strong> \u2014 a trader's existing holdings, whether BTC, ADA, stablecoins, or tokenized TradFi instruments, should be usable as margin without a forced conversion or sale.</li>\n      <li><strong>Trust-minimized custody</strong> \u2014 no single custodian or signer should be able to unilaterally move user funds; custody is distributed across a rotating, threshold-signed vault network with public proof-of-reserve attestations.</li>\n      <li><strong>Deterministic, auditable execution</strong> \u2014 the full order and matching history should be independently replayable and verifiable against on-chain state commitments, not simply asserted by the operator.</li>\n      <li><strong>Institutional-grade risk management</strong> \u2014 graduated liquidations, a funded insurance backstop, and transparent, formulaic funding rates rather than discretionary risk decisions.</li>\n      <li><strong>Progressive decentralization</strong> \u2014 protocol parameters, collateral listings, and treasury spending move to $SPACE-weighted governance on a published schedule.</li>\n    </ul>\n  </section>\n\n  <section id=\"product-overview\">\n    <h2>4. Product Overview</h2>\n    <p>At launch, Spaceman Perps offers cash-settled perpetual futures \u2014 contracts with no expiry and no physical delivery, referencing an index price for the underlying market:</p>\n    <ul>\n      <li><strong>Crypto majors</strong> \u2014 BTC, ETH, ADA, SOL, and other high-liquidity pairs.</li>\n      <li><strong>FX</strong> \u2014 major currency pairs (e.g., EUR/USD, USD/JPY) referencing an aggregated institutional FX index.</li>\n      <li><strong>Commodities</strong> \u2014 gold, silver, and energy benchmarks.</li>\n      <li><strong>Equity indices</strong> \u2014 broad-market index price feeds, cash-settled only.</li>\n    </ul>\n    <p>Traders choose cross-margin (all collateral and positions share one account-level risk pool) or isolated margin (collateral is ring-fenced per position). Supported order types include market, limit, stop-loss/take-profit, and a time-weighted execution algorithm for reducing the market impact of large orders. Maximum leverage and initial margin requirements are set per market and per collateral tier, and are adjusted by governance in response to volatility and liquidity conditions rather than fixed permanently.</p>\n  </section>\n\n  <section id=\"margin-system\">\n    <h2>5. Multi-Asset Margin System</h2>\n    <p>The defining feature of Spaceman Perps is a tiered, cross-chain collateral system that lets fundamentally different kinds of assets back the same margin account.</p>\n    <h3>5.1 Tier 1 \u2014 Native Bitcoin</h3>\n    <p>BTC is held in a threshold-signature vault network (an MPC scheme in the spirit of FROST) operated by a rotating set of independent signers, rather than by any single custodian. No individual signer can move funds alone; a quorum is required, and the signer set is rotated on a fixed schedule. The vault network publishes periodic, independently verifiable proof-of-reserve attestations so that the ratio of on-chain BTC to credited margin balances is always publicly checkable.</p>\n    <h3>5.2 Tier 2 \u2014 Native ADA and major stablecoins</h3>\n    <p>ADA and vetted stablecoins (e.g., regulated USD-referenced stablecoins and Cardano-native overcollateralized stablecoins) settle directly against the Cardano ledger and receive the most favorable haircut and leverage terms, reflecting their liquidity and low custody complexity.</p>\n    <h3>5.3 Tier 3 \u2014 Tokenized TradFi collateral</h3>\n    <p>Whitelisted tokenized short-duration Treasury and money-market fund shares from regulated, governance-approved issuers can be posted as margin. These positions continue to accrue their underlying yield while pledged. Because redemption of the underlying fund can take longer than a crypto-native settlement cycle, Tier 3 collateral is subject to a larger haircut and a lower maximum leverage multiple than Tiers 1 and 2, and is capped as a share of any single account's total margin.</p>\n    <h3>5.4 Unified accounting</h3>\n    <p>An on-chain \"exchanger\" module marks every posted collateral type to a common USD-equivalent unit using redundant oracle price feeds, applies the collateral's governance-set haircut, and computes each account's net margin balance and available leverage in real time. Chain-specific vault contracts on Bitcoin, Cardano, and (in later phases) additional chains each attest to a canonical balance that is recorded and reconciled on the Cardano settlement ledger, which acts as the protocol's single source of truth for account state.</p>\n  </section>\n\n  <section id=\"architecture\">\n    <h2>6. Architecture</h2>\n    <p>Spaceman Perps separates matching from settlement, following the pattern used by leading on-chain derivatives venues, so that trading can be fast while custody and final state remain verifiably on-chain.</p>\n    <h3>6.1 Settlement layer \u2014 Cardano</h3>\n    <p>Aiken smart contracts on Cardano hold collateral proofs and position state roots, enforce withdrawal and liquidation rules, and are the final authority on account balances. Cardano's eUTXO model gives predictable fees and deterministic transaction outcomes, which suits a settlement layer that many independent parties need to be able to verify without surprises.</p>\n    <h3>6.2 Matching layer \u2014 the Spaceman Node</h3>\n    <p>Order matching happens off-chain in a deterministic sequencer: every inbound message (order, cancel, deposit, withdrawal) is assigned a strictly increasing nonce and processed in sequence. Because processing is deterministic, the entire trading history can be replayed by any third party and checked against state commitments the Node periodically publishes to Cardano \u2014 giving auditability without putting every order on-chain.</p>\n    <h3>6.3 Oracle layer</h3>\n    <p>Prices are aggregated from multiple independent oracle networks and exchange venues, combined via median aggregation and time-weighted smoothing to resist single-source manipulation. Circuit breakers pause a market if oracle sources diverge beyond a governance-set threshold or go stale.</p>\n    <h3>6.4 Custody &amp; bridge layer</h3>\n    <p>Each supported chain has its own threshold-signed vault contract. Deposits are confirmed by validator consensus before being credited; withdrawals require the same multi-party threshold approval. Proof-of-reserve attestations are published on a fixed cadence so that vault solvency does not rely on trust in any single announcement.</p>\n  </section>\n\n  <section id=\"risk-engine\">\n    <h2>7. Risk Engine</h2>\n    <h3>7.1 Funding rate</h3>\n    <p>A periodic funding payment is exchanged directly between long and short position holders, sized to the premium or discount between the perpetual's mark price and the underlying index price. This is a peer-to-peer transfer, not a protocol fee, and is the primary mechanism keeping the perpetual price anchored to the spot market.</p>\n    <h3>7.2 Graduated liquidation</h3>\n    <p>Rather than closing an entire under-margined position at once, the liquidation engine reduces a position in stages as it crosses successive margin thresholds. This reduces the price impact and slippage of any single liquidation and lowers the chance that one liquidation triggers a cascade of others.</p>\n    <h3>7.3 Insurance fund</h3>\n    <p>A portion of trading fees and liquidation penalties is directed into an on-chain insurance fund that absorbs any shortfall between a liquidated position's closing price and its bankruptcy price, protecting the broader system from socialized losses under normal conditions.</p>\n    <h3>7.4 Circuit breakers</h3>\n    <p>Trading on a given market halts automatically if oracle price sources diverge beyond tolerance, a vault's proof-of-reserve attestation fails, or the Spaceman Node's published state commitment cannot be reconciled on-chain.</p>\n  </section>\n\n  <section id=\"fee-structure\">\n    <h2>8. Fee Structure</h2>\n    <p>Trading fees are charged as maker/taker rates that decline with 30-day trailing volume and with the trader's $SPACE staking tier. Funding payments are peer-to-peer and are not protocol revenue. Protocol trading-fee revenue is split three ways: a share to the insurance fund, a share streamed to $SPACE stakers via the sSPACE liquid staking mechanism described in Section 10, and a share to the DAO treasury for development, audits, and incentive programs. Exact split ratios are a governance parameter, not fixed in this document.</p>\n  </section>\n\n  <section id=\"tokenomics\">\n    <h2>9. $SPACE Tokenomics</h2>\n    <p>$SPACE is the protocol's governance and fee-sharing token. Figures below are an indicative starting design for planning purposes and are expected to be refined before any token generation event.</p>\n    <h3>9.1 Supply &amp; allocation</h3>\n    <div class=\"doc-table-wrap\">\n      <table class=\"doc-table\">\n        <caption>Table 1. Indicative $SPACE allocation. Total supply: 100,000,000 $SPACE.</caption>\n        <thead><tr><th>Category</th><th class=\"num\">Allocation</th><th class=\"num\">Tokens</th><th>Notes</th></tr></thead>\n        <tbody>\n          <tr><td>Community &amp; Public Distribution</td><td class=\"num\">70%</td><td class=\"num\">70,000,000</td><td>Public sale, liquidity mining, airdrops</td></tr>\n          <tr><td>DAO Treasury</td><td class=\"num\">10%</td><td class=\"num\">10,000,000</td><td>Governance-directed spend</td></tr>\n          <tr><td>Team &amp; Advisors</td><td class=\"num\">7.5%</td><td class=\"num\">7,500,000</td><td>12-mo cliff, 30-mo linear vest</td></tr>\n          <tr><td>Ecosystem &amp; Strategic Partners</td><td class=\"num\">5%</td><td class=\"num\">5,000,000</td><td>Integrations, market makers</td></tr>\n          <tr><td>Liquidity &amp; Market Making</td><td class=\"num\">5%</td><td class=\"num\">5,000,000</td><td>Exchange and on-chain liquidity</td></tr>\n          <tr><td>Insurance Fund Reserve</td><td class=\"num\">2.5%</td><td class=\"num\">2,500,000</td><td>Backstop capital, governance-released</td></tr>\n        </tbody>\n      </table>\n    </div>\n    <h3>9.2 Vesting</h3>\n    <ul>\n      <li><strong>Team &amp; Advisors</strong> \u2014 12-month cliff from token generation, then linear monthly unlock over 30 months.</li>\n      <li><strong>Ecosystem &amp; Strategic Partners</strong> \u2014 6-month cliff, then linear monthly unlock over 18 months.</li>\n      <li><strong>DAO Treasury</strong> \u2014 released only against governance-approved proposals; no automatic unlock.</li>\n      <li><strong>Community &amp; Public Distribution / Liquidity</strong> \u2014 largely liquid at or shortly after launch, per the terms of each specific program.</li>\n    </ul>\n    <h3>9.3 Utility</h3>\n    <ul>\n      <li><strong>Governance</strong> \u2014 $SPACE-weighted voting on collateral listings and haircuts, market listings, fee parameters, and treasury spending.</li>\n      <li><strong>Fee sharing</strong> \u2014 staking $SPACE for the liquid receipt token sSPACE earns a share of protocol trading-fee revenue; see Section 10.</li>\n      <li><strong>Collateral tier boost</strong> \u2014 posting $SPACE or sSPACE alongside other collateral can raise a trader's effective leverage tier or reduce the applicable haircut, up to governance-set limits.</li>\n      <li><strong>Fee discounts</strong> \u2014 staking tier reduces maker/taker fees, stacking with volume-based discounts.</li>\n    </ul>\n  </section>\n\n  <section id=\"staking\">\n    <h2>10. Liquid Staking &amp; Fee Distribution</h2>\n    <p>Staking $SPACE is designed to be liquid rather than locked-and-idle: stakers receive sSPACE, a transferable receipt token that represents a claim on their staked $SPACE plus its accrued share of protocol trading-fee revenue. The goal is that earning a share of Spaceman Perps' fee flow never requires giving up the ability to use that capital elsewhere.</p>\n    <h3>10.1 How sSPACE accrues value</h3>\n    <p>A defined share of protocol trading-fee revenue (see Section 8, Fee Structure) is streamed continuously into the staking pool rather than air-dropped to holders as a separate reward token. This increases the amount of $SPACE backing each sSPACE in the pool, so the sSPACE:$SPACE exchange rate rises over time \u2014 the same accrual model used by leading liquid-staking tokens in other ecosystems. Holders realize their earnings by redeeming sSPACE for a larger amount of $SPACE than they staked, or by selling sSPACE at a price that reflects the higher exchange rate, rather than by receiving periodic taxable-style payouts.</p>\n    <h3>10.2 Composability</h3>\n    <p>Because sSPACE is a standard transferable token rather than a locked position, it can be used elsewhere while still accruing fee revenue in the background: posted as Tier-boosting collateral inside Spaceman Perps itself (Section 5.4), or supplied to other Cardano DeFi venues for lending or liquidity provision. Stakers are not forced to choose between earning protocol fees and putting that capital to work.</p>\n    <h3>10.3 Unstaking</h3>\n    <p>Converting sSPACE back to $SPACE is available two ways: a standard unbonding queue (a fixed cooldown period, targeted at seven days) with no exit fee, which protects the staking pool from sudden withdrawal pressure; or an instant-unstake path through a dedicated sSPACE/$SPACE liquidity pool, which is faster but subject to market pricing and a small exit fee that compensates that pool's liquidity providers.</p>\n    <h3>10.4 Backstop tranche</h3>\n    <p>Alongside standard sSPACE, stakers may opt into a second, smaller tranche that also backstops the insurance fund (Section 7.3): this tranche's principal can be drawn down to cover an extreme liquidation shortfall before the core insurance fund is touched, and in exchange it earns a higher share of fee revenue than standard sSPACE. This is an opt-in, higher-risk position, not the default staking product.</p>\n    <div class=\"doc-table-wrap\">\n      <table class=\"doc-table\">\n        <caption>Table 2. Indicative comparison of the two staking tranches. Exact fee-share and unbonding parameters are governance-set.</caption>\n        <thead><tr><th></th><th>Standard \u2014 sSPACE</th><th>Backstop tranche</th></tr></thead>\n        <tbody>\n          <tr><td>Fee share</td><td>Base staking rate</td><td>Base rate + backstop premium</td></tr>\n          <tr><td>Principal at risk</td><td>No \u2014 principal is not slashable</td><td>Yes \u2014 first-loss capital for extreme insurance-fund shortfalls</td></tr>\n          <tr><td>Unstake</td><td>7-day unbonding, or instant via LP (exit fee)</td><td>Longer unbonding; instant-exit pool sized separately</td></tr>\n          <tr><td>Composability</td><td>Freely transferable / usable as collateral elsewhere</td><td>Freely transferable / usable as collateral elsewhere</td></tr>\n        </tbody>\n      </table>\n    </div>\n    <p>Voting weight for on-chain governance (Section 11) is intended to follow staked $SPACE \u2014 whether held directly or represented by sSPACE \u2014 so that stakers do not have to unstake to participate in governance; the precise delegation mechanics are left to the governance module's technical specification.</p>\n  </section>\n\n  <section id=\"governance\">\n    <h2>11. Governance</h2>\n    <p>Spaceman Perps is intended to launch under a core-team multisig with a published, time-boxed handover schedule to $SPACE-weighted on-chain governance, aligned where practical with Cardano's native governance tooling. Governance's scope is expected to include: which markets are listed, which collateral types and haircuts are accepted (particularly additions to the Tier 3 TradFi whitelist), fee parameters and revenue splits, treasury spending, and approval of protocol upgrades. Emergency pause authority remains with the core team during the early, higher-risk phase of the protocol and is expected to transition to a governance-controlled multisig as the system matures.</p>\n  </section>\n\n  <section id=\"security\">\n    <h2>12. Security</h2>\n    <ul>\n      <li>Independent smart-contract audits from more than one firm prior to mainnet launch, with reports published publicly.</li>\n      <li>Formal verification of the core Aiken settlement contracts where feasible.</li>\n      <li>A public bug bounty scaled to funds at risk.</li>\n      <li>Staged rollout with TVL and per-account exposure caps during the initial mainnet period, lifted gradually as the system accrues a track record.</li>\n    </ul>\n  </section>\n\n  <section id=\"roadmap\">\n    <h2>13. Roadmap</h2>\n    <div class=\"doc-table-wrap\">\n      <table class=\"doc-table\">\n        <caption>Table 3. Indicative roadmap. Dates are planning targets, not commitments, and are contingent on audit results and market conditions.</caption>\n        <thead><tr><th>Target</th><th>Milestone</th></tr></thead>\n        <tbody>\n          <tr><td class=\"num\">Q4 2026</td><td>Testnet launch: BTC, ADA, and major-stablecoin margin; crypto-major perpetuals only.</td></tr>\n          <tr><td class=\"num\">Q1 2027</td><td>Independent security audits completed; mainnet launch with a limited collateral whitelist and conservative TVL caps.</td></tr>\n          <tr><td class=\"num\">Q2 2027</td><td>Tokenized TradFi collateral (Tier 3) integration; FX and commodity markets added.</td></tr>\n          <tr><td class=\"num\">Q3 2027</td><td>Additional chain vaults (e.g., Ethereum, Solana); mobile app and programmatic trading API.</td></tr>\n          <tr><td class=\"num\">Q4 2027</td><td>$SPACE token generation event; phased handover of protocol parameters to DAO governance.</td></tr>\n        </tbody>\n      </table>\n    </div>\n  </section>\n\n  <section id=\"risk-factors\">\n    <h2>14. Risk Factors &amp; Disclosures</h2>\n    <p>This document describes a hypothetical protocol design prepared for internal planning and discussion. It is not a prospectus, is not an offer or solicitation to buy or sell any security or token, and no $SPACE or sSPACE token currently exists or has been issued. Nothing in this document should be relied upon as financial, legal, or investment advice.</p>\n    <ul>\n      <li><strong>Leverage risk</strong> \u2014 leveraged perpetual futures can result in losses exceeding initial margin, including total loss of posted collateral, through liquidation.</li>\n      <li><strong>Smart-contract risk</strong> \u2014 audits reduce but do not eliminate the risk of a bug or exploit in the settlement, custody, or matching logic.</li>\n      <li><strong>Oracle risk</strong> \u2014 price feeds can be delayed, manipulated, or diverge from the true market price despite aggregation and circuit breakers.</li>\n      <li><strong>Custody &amp; bridge risk</strong> \u2014 threshold-signature schemes reduce but do not remove the risk of signer collusion, key compromise, or a flaw in cross-chain vault logic.</li>\n      <li><strong>Tokenized TradFi collateral risk</strong> \u2014 the value and liquidity of tokenized Treasury or fund shares depend on the issuer's own solvency, redemption mechanics, and legal structure, which are outside this protocol's control.</li>\n      <li><strong>Liquid staking risk</strong> \u2014 the sSPACE exchange rate depends on actual protocol fee revenue, which can fall or go to zero in low-volume periods; sSPACE's secondary market price can also trade at a discount to its underlying exchange rate during stress or heavy exit demand, and the optional backstop tranche's principal can be reduced to cover insurance-fund shortfalls.</li>\n      <li><strong>Regulatory risk</strong> \u2014 the legal treatment of on-chain derivatives, stablecoins, staking products, and tokenized securities varies by jurisdiction and is evolving; the protocol's ability to operate in, or serve users in, any given jurisdiction is not guaranteed.</li>\n      <li><strong>Execution risk</strong> \u2014 the protocol described here is unbuilt or partially built; timelines, features, and parameters in this document are subject to change without notice.</li>\n    </ul>\n  </section>\n\n  <section id=\"conclusion\">\n    <h2>15. Conclusion</h2>\n    <p>Spaceman Perps aims to be the settlement point where Bitcoin's capital, Cardano-native liquidity, and tokenized TradFi collateral can all back the same leveraged trading account \u2014 without asking any of those holders to give up custody, yield, or the properties that made them want to hold that asset in the first place. The design in this document is deliberately conservative on custody and risk management, because a cross-chain, multi-asset margin system only earns the right to grow if it survives its first stress event. The next steps are formal specification of the settlement contracts, engagement of audit partners, and a testnet that puts the deterministic-replay and proof-of-reserve claims in this paper in front of independent verification.</p>\n  </section>\n\n  <footer class=\"doc-footer\">\n    <p>Spaceman Perps Whitepaper v1.0 \u2014 Draft \u2014 August 2026 \u2014 Conceptual document, subject to change.</p>\n    <a class=\"back-link\" id=\"wpBackLink\" href=\"https://claude.ai/code/artifact/79d95d3a-12cc-4420-a39d-68ece3732461\">\u2190 Back to Spaceman Perps</a>\n  </footer>\n</article>\n\n<script>\n(function(){\n  \"use strict\";\n\n  function init(){\n    var backLink = document.getElementById(\"wpBackLink\");\n    if (backLink) {\n      backLink.addEventListener(\"click\", function(e){\n        if (window.parent && window.parent !== window) {\n          e.preventDefault();\n          window.parent.postMessage({ type: \"wp-close\" }, \"*\");\n        }\n      });\n    }\n  }\n\n  if (document.readyState === \"loading\") {\n    document.addEventListener(\"DOMContentLoaded\", init);\n  } else {\n    init();\n  }\n})();\n<\/script>\n\n</body>\n</html>";
+
+  var wpLoaded = false;
+
+  function openWhitepaper(){
+    var overlay = document.getElementById("wpOverlay");
+    var frame = document.getElementById("wpFrame");
+    if (!wpLoaded) {
+      frame.srcdoc = WHITEPAPER_DOC;
+      wpLoaded = true;
+    }
+    overlay.classList.add("open");
+  }
+
+  function closeWhitepaper(){
+    document.getElementById("wpOverlay").classList.remove("open");
+  }
+
+  window.addEventListener("message", function(e){
+    var d = e.data;
+    if (!d || typeof d !== "object") return;
+    if (d.type === "wp-close") {
+      closeWhitepaper();
+    }
+  });
+
+  function init(){
+    var btn = document.getElementById("whitepaperBtn");
+    var closeBtn = document.getElementById("wpCloseBtn");
+    if (btn) btn.addEventListener("click", openWhitepaper);
+    if (closeBtn) closeBtn.addEventListener("click", closeWhitepaper);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>
